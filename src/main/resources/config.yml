@@ -1,0 +1,31 @@
+format:
+    chat: "&6&l@{player-name}"
+    action-bar: "&6{player-name} &7mentioned you."
+
+message:
+    action-bar-on: "&aMentions will now be displayed in the action bar."
+    action-bar-off: "&cMentions will no longer be displayed in the action bar."
+    sound-on: "&aMentions sound is now activated."
+    sound-off: "&cMentions soud is now deactivated."
+    toggle-on: "&aYou can now be mentioned."
+    toggle-off: "&cYou can no longer be mentioned."
+    error:
+        already-on: "&cMentions is already toggled on."
+        already-off: "&ccMentions is already toggled off."
+        action-bar-already-on: "&cMentions is already toggle on for the action bar."
+        action-bar-already-off: "&cMentions is already toggled off for the action bar."
+        sound-already-on: "&ccMentions sound is already toggled on."
+        sound-already-off: "&ccMentions sound is already toggled off."
+
+option:
+    # Sound by version can be founded here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
+    # For 1.8 please change this to : NOTE_PLING
+    sound: "BLOCK_NOTE_PLING"
+    default: # default value
+        action-bar: true
+        mention: true
+        sound: true
+    permission:
+        bypass-action-bar: "mention.bypass-action-bar" # force sending mention to the action bar.
+        bypass-mention: "mention.bypass-mention" # force mentioning a player who does not accept the mentions.
+        bypass-sound: "mention.bypass-sound" # force playing sound by mentioning a player who does not allow sounds.

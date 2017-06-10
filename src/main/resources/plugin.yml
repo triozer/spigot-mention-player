@@ -1,0 +1,11 @@
+name: MentionPlayer
+
+main: fr.triozer.mentionplayer.MentionPlayer
+author: Triozer
+version: 1.0
+
+description: Mention a player.
+
+commands:
+    mention:
+        description: Change your settings.
