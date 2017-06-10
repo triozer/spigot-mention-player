@@ -1,5 +1,6 @@
 package fr.triozer.mentionplayer.command;
 
+import fr.triozer.mentionplayer.MentionPlayer;
 import fr.triozer.mentionplayer.misc.MPlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -54,6 +55,11 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                 player.enableMention();
             } else if ("off".equalsIgnoreCase(args[0])) {
                 player.disableMention();
+            } else if ("reload".equalsIgnoreCase(args[0])
+                    && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                    .getString("option.permission.bypass-reload"))) {
+                MentionPlayer.getInstance().reloadConfig();
+                player.getPlayer().sendMessage("§aSuccessfully reloaded the configuration.");
             } else {
                 return false;
             }
@@ -63,6 +69,12 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
+        if (!(commandSender instanceof Player)) {
+            commandSender.sendMessage("§cError, only a player can change her mention settings.");
+
+            return null;
+        }
+
         List<String> subcommand = new ArrayList<>();
 
         if (args.length == 1) {
@@ -73,11 +85,19 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
             } else if (args[0].startsWith("o")) {
                 subcommand.add("on");
                 subcommand.add("off");
+            } else if (args[0].startsWith("r")
+                    && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                    .getString("option.permission.bypass-reload"))) {
+                subcommand.add("reload");
             } else {
                 subcommand.add("actionbar");
                 subcommand.add("sound");
                 subcommand.add("on");
                 subcommand.add("off");
+
+                if (commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                        .getString("option.permission.bypass-reload")))
+                    subcommand.add("reload");
             }
         } else if (args.length == 2) {
             if ("actionbar".equalsIgnoreCase(args[0]) || "sound".equalsIgnoreCase(args[0])) {
