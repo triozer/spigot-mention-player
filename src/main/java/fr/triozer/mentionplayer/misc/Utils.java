@@ -17,7 +17,7 @@ public class Utils {
 
         version = version.substring(version.lastIndexOf(".") + 1);
 
-        if (version.equalsIgnoreCase("v1_8_R1") || version.equalsIgnoreCase("v1_7_")) { // Not sure if 1_7 works for the protocol hack?
+        if (version.contains("v1_8")) {
             useOldMethods = true;
         }
 

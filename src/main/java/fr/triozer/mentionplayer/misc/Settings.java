@@ -9,6 +9,10 @@ import org.bukkit.Sound;
  */
 public class Settings {
 
+    public static boolean canTabComplete() {
+        return MentionPlayer.getInstance().getConfig().getBoolean("option.tab-complete");
+    }
+
     public static String formatChat(String playerName) {
         return MentionPlayer.getInstance().getConfig().getString("format.chat").replaceAll("&", "§").replace("{player-name}", playerName);
     }
@@ -26,7 +30,7 @@ public class Settings {
             String version = Bukkit.getServer().getClass().getPackage().getName();
             version = version.substring(version.lastIndexOf(".") + 1);
 
-            if (version.equalsIgnoreCase("v1_8_R1") || version.equalsIgnoreCase("v1_7_")) {
+            if (version.contains("v1_8")) {
                 sound = Sound.valueOf("NOTE_PLING");
             } else {
                 sound = Sound.valueOf("BLOCK_NOTE_PLING");
