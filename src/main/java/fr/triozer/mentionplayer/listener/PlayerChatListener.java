@@ -33,6 +33,14 @@ public class PlayerChatListener implements Listener {
             for (Player player : players) {
                 MPlayer mPlayer = MPlayer.get(player);
 
+                if (System.currentTimeMillis() - mPlayer.getLastMessage() <= Settings.getInterval()) {
+                    sender.spam();
+                    event.setCancelled(true);
+                    return;
+                }
+
+                mPlayer.setLastMessage(System.currentTimeMillis());
+
                 if (sender.canBypassMention() || mPlayer.isMentionable()) {
                     String message = event.getMessage().replace("@" + player.getName(), Settings.formatChat(player.getName()) + "§r");
 

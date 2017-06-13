@@ -9,6 +9,13 @@ import org.bukkit.Sound;
  */
 public class Settings {
 
+    public static long getInterval() {
+        if (MentionPlayer.getInstance().getConfig().getBoolean("option.anti-spam.enable"))
+            return MentionPlayer.getInstance().getConfig().getLong("option.anti-spam.interval") * 1000;
+        else
+            return 0L;
+    }
+
     public static boolean canTabComplete() {
         return MentionPlayer.getInstance().getConfig().getBoolean("option.tab-complete");
     }

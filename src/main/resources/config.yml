@@ -14,10 +14,14 @@ message:
         already-off: "&ccMentions is already toggled off."
         action-bar-already-on: "&cMentions is already toggle on for the action bar."
         action-bar-already-off: "&cMentions is already toggled off for the action bar."
-        sound-already-on: "&ccMentions sound is already toggled on."
-        sound-already-off: "&ccMentions sound is already toggled off."
+        sound-already-on: "&cMentions sound is already toggled on."
+        sound-already-off: "&cMentions sound is already toggled off."
+        spam: "§cYou can't spam like this."
 
 option:
+    anti-spam:
+        enable: true
+        interval: 5 # in second
     # Sound by version can be founded here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
     # For 1.8 please change this to : NOTE_PLING
     sound: "BLOCK_NOTE_PLING"

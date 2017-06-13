@@ -17,29 +17,33 @@ public class MPlayer {
     private boolean receiveSound;
     private boolean receiveMention;
     private boolean actionBar;
+    private long    lastMessage;
 
-    private MPlayer(Player player, boolean receiveSound, boolean receiveMention, boolean actionBar) {
+    private MPlayer(Player player, boolean receiveSound, boolean receiveMention, boolean actionBar, long lastMessage) {
         this.uuid = player.getUniqueId();
 
         this.receiveSound = receiveSound;
         this.receiveMention = receiveMention;
         this.actionBar = actionBar;
+        this.lastMessage = lastMessage;
 
         this.save();
     }
 
     public static MPlayer get(Player player) {
-        boolean a = MentionPlayer.getInstance().getConfig().getBoolean("option.default.sound");
-        boolean b = MentionPlayer.getInstance().getConfig().getBoolean("option.default.mention");
-        boolean c = MentionPlayer.getInstance().getConfig().getBoolean("option.default.action-bar");
+        boolean a           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.sound");
+        boolean b           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.mention");
+        boolean c           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.action-bar");
+        long    lastMessage = 0L;
 
         if (MentionPlayer.getInstance().getData().contains("" + player.getUniqueId())) {
             a = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".sound");
             b = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".mention");
             c = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".action-bar");
+            lastMessage = MentionPlayer.getInstance().getData().getLong(player.getUniqueId() + ".last-message");
         }
 
-        return new MPlayer(player, a, b, c);
+        return new MPlayer(player, a, b, c, lastMessage);
     }
 
     public void enableSound() {
@@ -114,10 +118,15 @@ public class MPlayer {
         save();
     }
 
+    public void spam() {
+        sendMessage("message.error.spam");
+    }
+
     private void save() {
         MentionPlayer.getInstance().getData().set(this.uuid + ".sound", this.receiveSound);
         MentionPlayer.getInstance().getData().set(this.uuid + ".mention", this.receiveMention);
         MentionPlayer.getInstance().getData().set(this.uuid + ".action-bar", this.actionBar);
+        MentionPlayer.getInstance().getData().set(this.uuid + ".last-message", this.lastMessage);
 
         try {
             MentionPlayer.getInstance().getData().save(MentionPlayer.getInstance().getDataFile());
@@ -128,6 +137,15 @@ public class MPlayer {
 
     private void sendMessage(String path) {
         getPlayer().sendMessage(MentionPlayer.getInstance().getConfig().getString(path).replaceAll("&", "§"));
+    }
+
+    public final long getLastMessage() {
+        return this.lastMessage;
+    }
+
+    public void setLastMessage(long lastMessage) {
+        this.lastMessage = lastMessage;
+        save();
     }
 
     public final Player getPlayer() {
