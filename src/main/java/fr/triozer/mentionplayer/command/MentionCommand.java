@@ -26,7 +26,10 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
 
         MPlayer player = MPlayer.get((Player) commandSender);
 
-        if (args.length == 0) return false;
+        if (args.length == 0) {
+            player.getPlayer().sendMessage("§cUse: §a/mention [actionbar | sound | on | off]");
+            return true;
+        }
 
         if (args.length >= 1)
             if ("actionbar".equalsIgnoreCase(args[0])) {
