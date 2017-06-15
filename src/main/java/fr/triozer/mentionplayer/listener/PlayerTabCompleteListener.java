@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 /**
  * @author Cédric / Triozer
  */
-public class PlayerTabCompleteEvent implements Listener {
+public class PlayerTabCompleteListener implements Listener {
 
     @EventHandler
     public void onTabComplete(PlayerChatTabCompleteEvent event) {

@@ -2,7 +2,7 @@ package fr.triozer.mentionplayer;
 
 import fr.triozer.mentionplayer.command.MentionCommand;
 import fr.triozer.mentionplayer.listener.PlayerChatListener;
-import fr.triozer.mentionplayer.listener.PlayerTabCompleteEvent;
+import fr.triozer.mentionplayer.listener.PlayerTabCompleteListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -42,7 +42,7 @@ public class MentionPlayer extends JavaPlugin {
 
     private void registerListener() {
         Bukkit.getPluginManager().registerEvents(new PlayerChatListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerTabCompleteEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerTabCompleteListener(), this);
     }
 
     private void createConfig() {
