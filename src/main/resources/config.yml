@@ -1,4 +1,6 @@
 format:
+    # Colors can be found here : https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html.
+    text-color: "GRAY"
     chat: "&6&l@{player-name}"
     action-bar: "&6{player-name} &7mentioned you."
 
@@ -22,7 +24,7 @@ option:
     anti-spam:
         enable: true
         interval: 5 # in second
-    # Sound by version can be founded here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
+    # Sounds by version can be found here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
     # For 1.8 please change this to : NOTE_PLING
     sound: "BLOCK_NOTE_PLING"
     tab-complete: true

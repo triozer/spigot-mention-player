@@ -30,7 +30,7 @@ public class PlayerChatListener implements Listener {
 
             MPlayer sender = MPlayer.get(event.getPlayer());
 
-            String message = String.format(event.getFormat(), sender.getPlayer().getName(), event.getMessage());
+            String message;
             for (Player player : players) {
                 MPlayer mPlayer = MPlayer.get(player);
                 event.setCancelled(true);
@@ -43,7 +43,10 @@ public class PlayerChatListener implements Listener {
                 mPlayer.setLastMessage(System.currentTimeMillis());
 
                 if (sender.canBypassMention() || mPlayer.isMentionable()) {
-                    String mention = event.getMessage().replace("@" + player.getName(), Settings.formatChat(player.getName()) + "§r");
+                    event.setCancelled(false);
+                    event.getRecipients().remove(player);
+
+                    String mention = Settings.textColor() + event.getMessage().replace("@" + player.getName(), Settings.formatChat(player.getName()) + Settings.textColor());
                     message = String.format(event.getFormat(), sender.getPlayer().getName(), mention);
 
                     if (sender.canBypassSound() || mPlayer.isSoundable())
@@ -52,10 +55,7 @@ public class PlayerChatListener implements Listener {
                         Utils.sendActionBar(player, Settings.formatActionBar(sender.getPlayer().getName()));
 
                     player.sendMessage(message);
-                    return;
                 }
-
-                player.sendMessage(message);
             }
         }
     }

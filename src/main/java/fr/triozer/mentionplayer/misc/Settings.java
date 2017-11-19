@@ -2,6 +2,7 @@ package fr.triozer.mentionplayer.misc;
 
 import fr.triozer.mentionplayer.MentionPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 
 /**
@@ -18,6 +19,10 @@ public class Settings {
 
     public static boolean canTabComplete() {
         return MentionPlayer.getInstance().getConfig().getBoolean("option.tab-complete");
+    }
+
+    public static ChatColor textColor() {
+        return ChatColor.valueOf(MentionPlayer.getInstance().getConfig().getString("format.text-color"));
     }
 
     public static String formatChat(String playerName) {
