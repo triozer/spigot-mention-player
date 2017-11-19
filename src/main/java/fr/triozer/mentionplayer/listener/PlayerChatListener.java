@@ -47,7 +47,7 @@ public class PlayerChatListener implements Listener {
                     event.getRecipients().remove(player);
 
                     String mention = Settings.textColor() + event.getMessage().replace("@" + player.getName(), Settings.formatChat(player.getName()) + Settings.textColor());
-                    message = String.format(event.getFormat(), sender.getPlayer().getName(), mention);
+                    message = String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention);
 
                     if (sender.canBypassSound() || mPlayer.isSoundable())
                         player.playSound(player.getLocation(), Settings.getSound(), 1f, 1f);
