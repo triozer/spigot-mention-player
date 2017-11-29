@@ -1,16 +1,21 @@
 package fr.triozer.mentionplayer.misc;
 
 import fr.triozer.mentionplayer.MentionPlayer;
+import fr.triozer.mentionplayer.gui.OptionUI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * @author Cédric / Triozer
  */
 public class MPlayer {
+
+    private static Map<UUID, MPlayer> players = new HashMap<>();
 
     private final UUID uuid;
 
@@ -27,23 +32,29 @@ public class MPlayer {
         this.actionBar = actionBar;
         this.lastMessage = lastMessage;
 
+        players.put(player.getUniqueId(), this);
+
         this.save();
     }
 
     public static MPlayer get(Player player) {
-        boolean a           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.sound");
-        boolean b           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.mention");
-        boolean c           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.action-bar");
-        long    lastMessage = 0L;
+        if (players.containsKey(player.getUniqueId())) {
+            return players.get(player.getUniqueId());
+        } else {
+            boolean a           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.sound");
+            boolean b           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.mention");
+            boolean c           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.action-bar");
+            long    lastMessage = 0L;
 
-        if (MentionPlayer.getInstance().getData().contains("" + player.getUniqueId())) {
-            a = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".sound");
-            b = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".mention");
-            c = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".action-bar");
-            lastMessage = MentionPlayer.getInstance().getData().getLong(player.getUniqueId() + ".last-message");
+            if (MentionPlayer.getInstance().getData().contains("" + player.getUniqueId())) {
+                a = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".sound");
+                b = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".mention");
+                c = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".action-bar");
+                lastMessage = MentionPlayer.getInstance().getData().getLong(player.getUniqueId() + ".last-message");
+            }
+
+            return new MPlayer(player, a, b, c, lastMessage);
         }
-
-        return new MPlayer(player, a, b, c, lastMessage);
     }
 
     public void enableSound() {
@@ -175,4 +186,5 @@ public class MPlayer {
     public final boolean canBypassActionBar() {
         return getPlayer().hasPermission(MentionPlayer.getInstance().getConfig().getString("option.permission.bypass-action-bar"));
     }
+
 }
