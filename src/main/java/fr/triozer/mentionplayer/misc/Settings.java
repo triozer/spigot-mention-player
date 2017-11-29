@@ -10,34 +10,44 @@ import org.bukkit.Sound;
  */
 public class Settings {
 
-    public static boolean canGUI() {
+    public static final String getTag() {
+        return MentionPlayer.getInstance().getConfig().getString("option.tag");
+    }
+
+    public static final boolean canGUI() {
         return Bukkit.getPluginManager().getPlugin("SmartInvs") != null || MentionPlayer.getInstance().getConfig().getBoolean("option.gui");
     }
 
-    public static long getInterval() {
+    public static final long getInterval() {
         if (MentionPlayer.getInstance().getConfig().getBoolean("option.anti-spam.enable"))
             return MentionPlayer.getInstance().getConfig().getLong("option.anti-spam.interval") * 1000;
         else
             return 0L;
     }
 
-    public static boolean canTabComplete() {
+    public static final boolean canTabComplete() {
         return MentionPlayer.getInstance().getConfig().getBoolean("option.tab-complete");
     }
 
-    public static ChatColor textColor() {
+    public static final ChatColor textColor() {
         return ChatColor.valueOf(MentionPlayer.getInstance().getConfig().getString("format.text-color"));
     }
 
-    public static String formatChat(String playerName) {
-        return MentionPlayer.getInstance().getConfig().getString("format.chat").replaceAll("&", "§").replace("{player-name}", playerName);
+    public static final String formatChat(String playerName) {
+        return MentionPlayer.getInstance().getConfig().getString("format.chat")
+                .replaceAll("&", "§")
+                .replace("{player-name}", playerName)
+                .replace("{tag}", getTag());
     }
 
-    public static String formatActionBar(String playerName) {
-        return MentionPlayer.getInstance().getConfig().getString("format.action-bar").replaceAll("&", "§").replace("{player-name}", playerName);
+    public static final String formatActionBar(String playerName) {
+        return MentionPlayer.getInstance().getConfig().getString("format.action-bar")
+                .replaceAll("&", "§")
+                .replace("{player-name}", playerName)
+                .replace("{tag}", getTag());
     }
 
-    public static Sound getSound() {
+    public static final Sound getSound() {
         Sound sound;
 
         try {

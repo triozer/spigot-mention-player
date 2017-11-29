@@ -1,23 +1,23 @@
 format:
     # Colors can be found here : https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html.
     text-color: "GRAY"
-    chat: "&6&l@{player-name}"
+    chat: "&6&l{tag}{player-name}"
     action-bar: "&6{player-name} &7mentioned you."
 
 message:
     action-bar-on: "&aMentions will now be displayed in the action bar."
     action-bar-off: "&cMentions will no longer be displayed in the action bar."
-    sound-on: "&aMentions sound is now activated."
-    sound-off: "&cMentions sound is now deactivated."
+    sound-on: "&aMentions sounds are now activated."
+    sound-off: "&cMentions sounds are now deactivated."
     toggle-on: "&aYou can now be mentioned."
     toggle-off: "&cYou can no longer be mentioned."
     error:
-        already-on: "&cMentions is already toggled on."
-        already-off: "&ccMentions is already toggled off."
-        action-bar-already-on: "&cMentions is already toggle on for the action bar."
-        action-bar-already-off: "&cMentions is already toggled off for the action bar."
-        sound-already-on: "&cMentions sound is already toggled on."
-        sound-already-off: "&cMentions sound is already toggled off."
+        already-on: "&cMentions are already toggled on."
+        already-off: "&cMentions are already toggled off."
+        action-bar-already-on: "&cMentions are already toggle on for the action bar."
+        action-bar-already-off: "&cMentions are already toggled off for the action bar."
+        sound-already-on: "&cMentions sounds are already toggled on."
+        sound-already-off: "&cMentions sounds are already toggled off."
         spam: "§cYou can't spam like this."
 
 option:
@@ -29,6 +29,7 @@ option:
     gui: true # Need SmartInvs (https://www.spigotmc.org/resources/smartinvs-advanced-inventory-api.42835/) to works
     sound: "BLOCK_NOTE_PLING"
     tab-complete: true
+    tag: "@"
     default: # default value
         action-bar: true
         mention: true

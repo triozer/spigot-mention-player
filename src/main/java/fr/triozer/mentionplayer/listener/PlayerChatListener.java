@@ -19,18 +19,17 @@ public class PlayerChatListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage().contains("@")) {
+        if (event.getMessage().contains(Settings.getTag())) {
             List<Player> players = new ArrayList<>();
 
             for (Player online : Bukkit.getOnlinePlayers())
-                if (event.getMessage().contains("@" + online.getName()))
+                if (event.getMessage().contains(Settings.getTag() + online.getName()))
                     players.add(online);
 
             if (players.isEmpty()) return;
 
             MPlayer sender = MPlayer.get(event.getPlayer());
 
-            String message;
             for (Player player : players) {
                 MPlayer mPlayer = MPlayer.get(player);
                 event.setCancelled(true);
@@ -46,8 +45,8 @@ public class PlayerChatListener implements Listener {
                     event.setCancelled(false);
                     event.getRecipients().remove(player);
 
-                    String mention = Settings.textColor() + event.getMessage().replace("@" + player.getName(), Settings.formatChat(player.getName()) + Settings.textColor());
-                    message = String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention);
+                    String mention = Settings.textColor() + event.getMessage().replace(Settings.getTag() + player.getName(), Settings.formatChat(player.getName()) + Settings.textColor());
+                    String message = String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention);
 
                     if (sender.canBypassSound() || mPlayer.isSoundable())
                         player.playSound(player.getLocation(), Settings.getSound(), 1f, 1f);
