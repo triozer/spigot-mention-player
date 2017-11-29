@@ -3,6 +3,7 @@ package fr.triozer.mentionplayer;
 import fr.triozer.mentionplayer.command.MentionCommand;
 import fr.triozer.mentionplayer.listener.PlayerChatListener;
 import fr.triozer.mentionplayer.listener.PlayerTabCompleteListener;
+import fr.triozer.mentionplayer.misc.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * @author Cédric / Triozer
@@ -28,6 +30,10 @@ public class MentionPlayer extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        if (!Settings.canGUI()) {
+            Bukkit.getLogger().log(Level.WARNING, "Your players can't use '/mention gui' because a dependency is missing. [SmartInvs]");
+        }
 
         createConfig();
 

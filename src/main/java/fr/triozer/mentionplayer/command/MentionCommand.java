@@ -1,7 +1,9 @@
 package fr.triozer.mentionplayer.command;
 
 import fr.triozer.mentionplayer.MentionPlayer;
+import fr.triozer.mentionplayer.gui.OptionUI;
 import fr.triozer.mentionplayer.misc.MPlayer;
+import fr.triozer.mentionplayer.misc.Settings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -27,7 +29,10 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
         MPlayer player = MPlayer.get((Player) commandSender);
 
         if (args.length == 0) {
-            player.getPlayer().sendMessage("§cUse: §a/mention [actionbar | sound | on | off | reload]");
+            if (Settings.canGUI())
+                player.getPlayer().sendMessage("§cUse: §a/mention [actionbar | gui | sound | on | off | reload]");
+            else
+                player.getPlayer().sendMessage("§cUse: §a/mention [actionbar | sound | on | off | reload]");
             return true;
         }
 
@@ -43,29 +48,34 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                     }
                 else
                     player.getPlayer().sendMessage("§cUse: §a/mention actionbar [on | off]");
-            } else if ("sound".equalsIgnoreCase(args[0])) {
-                if (args.length == 2)
-                    if ("on".equalsIgnoreCase(args[1])) {
-                        player.enableSound();
-                    } else if ("off".equalsIgnoreCase(args[1])) {
-                        player.disableSound();
-                    } else {
-                        player.getPlayer().sendMessage("§cUse: §a/mention sound [on | off]");
-                    }
-                else
-                    player.getPlayer().sendMessage("§cUse: §a/mention sound [on | off]");
-            } else if ("on".equalsIgnoreCase(args[0])) {
-                player.enableMention();
-            } else if ("off".equalsIgnoreCase(args[0])) {
-                player.disableMention();
-            } else if ("reload".equalsIgnoreCase(args[0])
-                    && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
-                    .getString("option.permission.bypass-reload"))) {
-                MentionPlayer.getInstance().reloadConfig();
-                player.getPlayer().sendMessage("§aSuccessfully reloaded the configuration.");
-            } else {
-                return false;
             }
+        if ("gui".equalsIgnoreCase(args[0])) {
+            if (Settings.canGUI())
+                OptionUI.INVENTORY.open(player.getPlayer());
+            else player.getPlayer().sendMessage("§cYou can't use this future.");
+        } else if ("sound".equalsIgnoreCase(args[0])) {
+            if (args.length == 2)
+                if ("on".equalsIgnoreCase(args[1])) {
+                    player.enableSound();
+                } else if ("off".equalsIgnoreCase(args[1])) {
+                    player.disableSound();
+                } else {
+                    player.getPlayer().sendMessage("§cUse: §a/mention sound [on | off]");
+                }
+            else
+                player.getPlayer().sendMessage("§cUse: §a/mention sound [on | off]");
+        } else if ("on".equalsIgnoreCase(args[0])) {
+            player.enableMention();
+        } else if ("off".equalsIgnoreCase(args[0])) {
+            player.disableMention();
+        } else if ("reload".equalsIgnoreCase(args[0])
+                && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                .getString("option.permission.bypass-reload"))) {
+            MentionPlayer.getInstance().reloadConfig();
+            player.getPlayer().sendMessage("§aSuccessfully reloaded the configuration.");
+        } else {
+            return false;
+        }
 
         return true;
     }
@@ -83,6 +93,8 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             if (args[0].startsWith("a")) {
                 subcommand.add("actionbar");
+            } else if (Settings.canGUI() && args[0].startsWith("g")) {
+                subcommand.add("gui");
             } else if (args[0].startsWith("s")) {
                 subcommand.add("sound");
             } else if (args[0].startsWith("o")) {
@@ -94,9 +106,10 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                 subcommand.add("reload");
             } else {
                 subcommand.add("actionbar");
-                subcommand.add("sound");
+                if (Settings.canGUI()) subcommand.add("gui");
                 subcommand.add("on");
                 subcommand.add("off");
+                subcommand.add("sound");
 
                 if (commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
                         .getString("option.permission.bypass-reload")))

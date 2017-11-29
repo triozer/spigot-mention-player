@@ -26,6 +26,7 @@ option:
         interval: 5 # in second
     # Sounds by version can be found here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
     # For 1.8 please change this to : NOTE_PLING
+    gui: true # Need SmartInvs (https://www.spigotmc.org/resources/smartinvs-advanced-inventory-api.42835/) to works
     sound: "BLOCK_NOTE_PLING"
     tab-complete: true
     default: # default value

@@ -10,6 +10,10 @@ import org.bukkit.Sound;
  */
 public class Settings {
 
+    public static boolean canGUI() {
+        return Bukkit.getPluginManager().getPlugin("SmartInvs") != null || MentionPlayer.getInstance().getConfig().getBoolean("option.gui");
+    }
+
     public static long getInterval() {
         if (MentionPlayer.getInstance().getConfig().getBoolean("option.anti-spam.enable"))
             return MentionPlayer.getInstance().getConfig().getLong("option.anti-spam.interval") * 1000;
