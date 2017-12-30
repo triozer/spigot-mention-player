@@ -1,12 +1,13 @@
 format:
     # Colors can be found here : https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html.
-    text-color: "GRAY"
-    chat: "&6&l{tag}{player-name}"
+    text-color: "GRAY" # color of the text (c.f. - make the tag most visible)
+    chat: "&l{tag}{player-name}"
     action-bar: "&6{player-name} &7mentioned you."
 
 message:
     action-bar-on: "&aMentions will now be displayed in the action bar."
     action-bar-off: "&cMentions will no longer be displayed in the action bar."
+    color: "&aSuccessfully changed your mention tag color! From {last} &ato {new}&a."
     sound-on: "&aMentions sounds are now activated."
     sound-off: "&cMentions sounds are now deactivated."
     toggle-on: "&aYou can now be mentioned."
@@ -18,24 +19,44 @@ message:
         action-bar-already-off: "&cMentions are already toggled off for the action bar."
         sound-already-on: "&cMentions sounds are already toggled on."
         sound-already-off: "&cMentions sounds are already toggled off."
-        spam: "§cYou can't spam like this."
+        spam: "&cYou can't spam like this."
 
 option:
+    update-notifier: true # check update on starting
     anti-spam:
         enable: true
         interval: 5 # in second
     # Sounds by version can be found here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
     # For 1.8 please change this to : NOTE_PLING
-    gui: true # Need SmartInvs (https://www.spigotmc.org/resources/smartinvs-advanced-inventory-api.42835/) to works
+    gui: true
     sound: "BLOCK_NOTE_PLING"
     tab-complete: true
     tag: "@"
     default: # default value
         action-bar: true
+        color: "Orange" # list of all colors and correspondence.
         mention: true
         sound: true
     permission:
         bypass-action-bar: "mention.bypass-action-bar" # force sending mention to the action bar.
+        bypass-anti-spam: "mention.bypass-anti-spam" # bypass the anti spam interval.
         bypass-mention: "mention.bypass-mention" # force mentioning a player who does not accept the mentions.
-        bypass-reload: "mention.bypass.reload" # reload the configuration file.
         bypass-sound: "mention.bypass-sound" # force playing sound by mentioning a player who does not allow sounds.
+        check-update: "mention.check-update" # allow player to check new update.*
+        color:
+            use: "mention.color.use" # permission to custom color of tag.
+            black: "mention.color.black"
+            blue: "mention.color.blue"
+            cyan: "mention.color.cyan"
+            dark-gray: "mention.color.dark-gray"
+            dark-green: "mention.color.dark-green"
+            dark-red: "mention.color.dark-red"
+            green: "mention.color.green"
+            orange: "mention.color.orange"
+            light-gray: "mention.color.light-gray"
+            light-purple: "mention.color.light-purple"
+            red: "mention.color.red"
+            white: "mention.color.white"
+            yellow: "mention.color.yellow"
+            rainbow: "mention.color.rainbow"
+        reload: "mention.reload" # reload the configuration file.
