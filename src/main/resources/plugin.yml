@@ -2,7 +2,7 @@ name: MentionPlayer
 
 main: fr.triozer.mentionplayer.MentionPlayer
 author: Triozer
-version: 1.0
+version: 1.12.9
 
 description: Mention a player.
 
