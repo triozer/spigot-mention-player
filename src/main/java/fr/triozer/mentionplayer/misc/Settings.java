@@ -10,44 +10,52 @@ import org.bukkit.Sound;
  */
 public class Settings {
 
-    public static final String getTag() {
+    public static String getTag() {
         return MentionPlayer.getInstance().getConfig().getString("option.tag");
     }
 
-    public static final boolean canGUI() {
-        return Bukkit.getPluginManager().getPlugin("SmartInvs") != null || MentionPlayer.getInstance().getConfig().getBoolean("option.gui");
+    public static boolean canGUI() {
+        return MentionPlayer.getInstance().getConfig().getBoolean("option.gui");
     }
 
-    public static final long getInterval() {
+    public static long getInterval() {
         if (MentionPlayer.getInstance().getConfig().getBoolean("option.anti-spam.enable"))
             return MentionPlayer.getInstance().getConfig().getLong("option.anti-spam.interval") * 1000;
         else
             return 0L;
     }
 
-    public static final boolean canTabComplete() {
+    public static boolean canTabComplete() {
         return MentionPlayer.getInstance().getConfig().getBoolean("option.tab-complete");
     }
 
-    public static final ChatColor textColor() {
+    public static ChatColor textColor() {
         return ChatColor.valueOf(MentionPlayer.getInstance().getConfig().getString("format.text-color"));
     }
 
-    public static final String formatChat(String playerName) {
-        return MentionPlayer.getInstance().getConfig().getString("format.chat")
+    public static String formatChat(ColorData color, String playerName) {
+        String replace = MentionPlayer.getInstance().getConfig().getString("format.chat")
                 .replaceAll("&", "§")
                 .replace("{player-name}", playerName)
                 .replace("{tag}", getTag());
+
+        return color == ColorData.RAINBOW ? color.rainbow(replace) : color.getChatColor() + replace;
     }
 
-    public static final String formatActionBar(String playerName) {
-        return MentionPlayer.getInstance().getConfig().getString("format.action-bar")
+    public static String formatActionBar(ColorData color, String playerName) {
+        String target = MentionPlayer.getInstance().getConfig().getString("format.chat")
                 .replaceAll("&", "§")
                 .replace("{player-name}", playerName)
                 .replace("{tag}", getTag());
+
+        String replace = MentionPlayer.getInstance().getConfig().getString("format.action-bar")
+                .replaceAll("&", "§")
+                .replace("{player-name}", color == ColorData.RAINBOW ? color.rainbow(target) : color.getChatColor() + target);
+
+        return replace;
     }
 
-    public static final Sound getSound() {
+    public static Sound getSound() {
         Sound sound;
 
         try {
@@ -58,14 +66,20 @@ public class Settings {
 
             if (version.contains("v1_8")) {
                 sound = Sound.valueOf("NOTE_PLING");
+                MentionPlayer.LOG.error("\"config.yml\" is configured improperly! Set '" + sound.name() + "' sound.");
+                MentionPlayer.getInstance().getConfig().set("option.sound", sound.name());
+                MentionPlayer.getInstance().saveConfig();
             } else {
                 sound = Sound.valueOf("BLOCK_NOTE_PLING");
             }
 
-            Bukkit.getConsoleSender().sendMessage("§c\"config.yml\" is configured improperly! Set '" + sound.name() + "' sound.");
         }
 
         return sound;
+    }
+
+    public static boolean canNotify() {
+        return MentionPlayer.getInstance().getConfig().getBoolean("option.update-notifier");
     }
 
 }
