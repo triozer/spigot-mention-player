@@ -34,7 +34,7 @@ option:
     tag: "@"
     default: # default value
         action-bar: true
-        color: "Orange" # list of all colors and correspondence.
+        color: "Orange" # list of all colors and correspondence : https://github.com/Triozer/spigot-mention-player/blob/master/src/colors.
         mention: true
         sound: true
     permission:
@@ -42,7 +42,7 @@ option:
         bypass-anti-spam: "mention.bypass-anti-spam" # bypass the anti spam interval.
         bypass-mention: "mention.bypass-mention" # force mentioning a player who does not accept the mentions.
         bypass-sound: "mention.bypass-sound" # force playing sound by mentioning a player who does not allow sounds.
-        check-update: "mention.check-update" # allow player to check new update.*
+        check-update: "mention.check-update" # allow player to check new update.
         color:
             use: "mention.color.use" # permission to custom color of tag.
             black: "mention.color.black"

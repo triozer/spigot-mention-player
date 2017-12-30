@@ -1,14 +1,17 @@
-Black
-Blue
-Cyan
-Dark Gray
-Dark Green
-Dark Red
-Green
-Orange
-Light Gray
-Light Purple
-Red
-White
-Yellow
-Rainbow
+# ID - mention.color.permission
+
+
+Black - mention.color.mention.color.black
+Blue - mention.color.blue
+Cyan - mention.color.cyan
+Dark Gray - mention.color.dark-gray
+Dark Green - mention.color.dark-green
+Dark Red - mention.color.dark-red
+Green - mention.color.green
+Orange - mention.color.orange
+Light Gray - mention.color.light-gray
+Light Purple - mention.color.light-purple
+Red - mention.color.red
+White - mention.color.white
+Yellow - mention.color.yellow
+Rainbow - mention.color.rainbow 
