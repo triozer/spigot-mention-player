@@ -93,6 +93,8 @@ public class MentionUI {
 
                     @Override
                     public void run() {
+                        if (player.getPlayer() == null || !player.getPlayer().isOnline()) cancel();
+
                         if (player.getPlayer().getOpenInventory().getTopInventory().equals(contents.build())) {
                             contents.setItem(16, ClickableItem.of(new ItemBuilder(Material.WOOL)
                                             .name("§r§6Color")
@@ -135,6 +137,8 @@ public class MentionUI {
 
                     @Override
                     public void run() {
+                        if (player.getPlayer() == null || !player.getPlayer().isOnline()) cancel();
+
                         if (player.getPlayer().getOpenInventory().getTopInventory().equals(color.build())) {
                             color.setItem(finalI, ClickableItem.of(new ItemBuilder(Material.WOOL)
                                             .name(colorData.rainbow(colorData.getID()))
