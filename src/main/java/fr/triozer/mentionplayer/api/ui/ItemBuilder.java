@@ -1,4 +1,4 @@
-package fr.triozer.mentionplayer.gui;
+package fr.triozer.mentionplayer.api.ui;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
