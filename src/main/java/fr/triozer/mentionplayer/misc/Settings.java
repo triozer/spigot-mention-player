@@ -30,7 +30,19 @@ public class Settings {
     }
 
     public static ChatColor textColor() {
-        return ChatColor.valueOf(MentionPlayer.getInstance().getConfig().getString("format.text-color"));
+        ChatColor color;
+
+        try {
+            color = ChatColor.valueOf(MentionPlayer.getInstance().getConfig().getString("format.text-color"));
+        } catch (IllegalArgumentException e) {
+            color = ChatColor.GRAY;
+
+            MentionPlayer.LOG.error("\"config.yml\" is configured improperly! Set text color to " + color.name() + ".");
+            MentionPlayer.getInstance().getConfig().set("format.text-color", color.name());
+            MentionPlayer.getInstance().saveConfig();
+        }
+
+        return color;
     }
 
     public static String formatChat(ColorData color, String playerName) {
@@ -60,7 +72,7 @@ public class Settings {
 
         try {
             sound = Sound.valueOf(MentionPlayer.getInstance().getConfig().getString("option.sound"));
-        } catch (IllegalArgumentException var2) {
+        } catch (IllegalArgumentException e) {
             String version = Bukkit.getServer().getClass().getPackage().getName();
             version = version.substring(version.lastIndexOf(".") + 1);
 
@@ -72,7 +84,6 @@ public class Settings {
             } else {
                 sound = Sound.valueOf("BLOCK_NOTE_PLING");
             }
-
         }
 
         return sound;
