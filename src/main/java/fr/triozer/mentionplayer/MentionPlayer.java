@@ -6,6 +6,7 @@ import fr.triozer.mentionplayer.command.MentionCommand;
 import fr.triozer.mentionplayer.listener.InventoryListener;
 import fr.triozer.mentionplayer.listener.PlayerChatListener;
 import fr.triozer.mentionplayer.listener.PlayerTabCompleteListener;
+import fr.triozer.mentionplayer.misc.ColorData;
 import fr.triozer.mentionplayer.misc.Console;
 import fr.triozer.mentionplayer.misc.Settings;
 import org.bukkit.Bukkit;
@@ -20,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Cédric / Triozer
@@ -35,6 +33,7 @@ public class MentionPlayer extends JavaPlugin {
     private static MentionPlayer instance;
 
     private List<InventoryBuilder> inventories;
+    private Map<String, ColorData> colors;
 
     private FileConfiguration data;
     private File              dataFile;
@@ -70,6 +69,9 @@ public class MentionPlayer extends JavaPlugin {
     public void onEnable() {
         instance = this;
         this.inventories = new ArrayList<>();
+        this.colors = new HashMap<>();
+
+        createConfig();
 
         if (Settings.canNotify()) {
             LOG.fine("Searching for updates.");
@@ -90,7 +92,7 @@ public class MentionPlayer extends JavaPlugin {
             LOG.warning("Your players can't use '/mention gui' because you disabled this feature.");
         }
 
-        createConfig();
+        Settings.registerColors();
 
         registerCommand();
         registerListener();
@@ -155,6 +157,10 @@ public class MentionPlayer extends JavaPlugin {
 
     public List<InventoryBuilder> getInventoriesList() {
         return this.inventories;
+    }
+
+    public Map<String, ColorData> getColors() {
+        return this.colors;
     }
 
 }

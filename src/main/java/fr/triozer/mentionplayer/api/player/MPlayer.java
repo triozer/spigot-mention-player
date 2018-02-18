@@ -22,17 +22,19 @@ public class MPlayer {
     private boolean receiveSound;
     private boolean receiveMention;
     private boolean actionBar;
+    private boolean visible;
     private long    lastMessage;
 
     private ColorData color;
 
-    private MPlayer(Player player, boolean receiveSound, boolean receiveMention, boolean actionBar, long lastMessage, ColorData color) {
+    private MPlayer(Player player, boolean receiveSound, boolean receiveMention, boolean actionBar, boolean visible, long lastMessage, ColorData color) {
         this.uuid = player.getUniqueId();
 
         this.receiveSound = receiveSound;
         this.receiveMention = receiveMention;
         this.actionBar = actionBar;
         this.lastMessage = lastMessage;
+        this.visible = visible;
         this.color = color;
 
         players.put(player.getUniqueId(), this);
@@ -47,6 +49,7 @@ public class MPlayer {
             boolean   a           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.sound");
             boolean   b           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.mention");
             boolean   c           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.action-bar");
+            boolean   d           = MentionPlayer.getInstance().getConfig().getBoolean("option.default.visible");
             long      lastMessage = 0L;
             ColorData color       = ColorData.get(MentionPlayer.getInstance().getConfig().getString("option.default.color"));
 
@@ -54,11 +57,12 @@ public class MPlayer {
                 a = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".sound");
                 b = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".mention");
                 c = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".action-bar");
+                d = MentionPlayer.getInstance().getData().getBoolean(player.getUniqueId() + ".visible");
                 lastMessage = MentionPlayer.getInstance().getData().getLong(player.getUniqueId() + ".last-message");
                 color = ColorData.get(MentionPlayer.getInstance().getData().getString(player.getUniqueId() + ".color"));
             }
 
-            return new MPlayer(player, a, b, c, lastMessage, color);
+            return new MPlayer(player, a, b, c, d, lastMessage, color);
         }
     }
 
@@ -66,16 +70,37 @@ public class MPlayer {
         if (!canUse(newColor)) return;
 
         getPlayer().sendMessage(get("message.color")
-                .replace("{last}", color == ColorData.RAINBOW ? color.rainbow(this.color.getID()) : color.getChatColor() + color.getID())
-                .replace("{new}", newColor == ColorData.RAINBOW ? color.rainbow(newColor.getID()) : newColor.getChatColor() + newColor.getID()));
+                .replace("{last}", color.parse(color.getName()))
+                .replace("{new}", newColor.parse(color.getName())));
 
         this.color = newColor;
+    }
+
+    public void showForAll() {
+        if (isVisible()) {
+            sendMessage("message.error.already-visible");
+            return;
+        }
+
+        this.visible = true;
+        sendMessage("message.visible-on");
+        save();
+    }
+
+    public void hideForAll() {
+        if (!isVisible()) {
+            sendMessage("message.error.already-hidden");
+            return;
+        }
+
+        this.visible = false;
+        sendMessage("message.visible-off");
+        save();
     }
 
     public void enableSound() {
         if (isSoundable()) {
             sendMessage("message.error.sound-already-on");
-
             return;
         }
 
@@ -87,7 +112,6 @@ public class MPlayer {
     public void disableSound() {
         if (!isSoundable()) {
             sendMessage("message.error.sound-already-off");
-
             return;
         }
 
@@ -99,7 +123,6 @@ public class MPlayer {
     public void enableActionBar() {
         if (canReceiveActionBar()) {
             sendMessage("message.error.action-bar-already-on");
-
             return;
         }
 
@@ -111,7 +134,6 @@ public class MPlayer {
     public void disableActionBar() {
         if (!canReceiveActionBar()) {
             sendMessage("message.error.action-bar-already-off");
-
             return;
         }
 
@@ -123,7 +145,6 @@ public class MPlayer {
     public void enableMention() {
         if (isMentionable()) {
             sendMessage("message.error.already-on");
-
             return;
         }
 
@@ -135,7 +156,6 @@ public class MPlayer {
     public void disableMention() {
         if (!isMentionable()) {
             sendMessage("message.error.already-off");
-
             return;
         }
 
@@ -153,6 +173,7 @@ public class MPlayer {
         MentionPlayer.getInstance().getData().set(this.uuid + ".mention", this.receiveMention);
         MentionPlayer.getInstance().getData().set(this.uuid + ".action-bar", this.actionBar);
         MentionPlayer.getInstance().getData().set(this.uuid + ".last-message", this.lastMessage);
+        MentionPlayer.getInstance().getData().set(this.uuid + ".visible", this.visible);
         MentionPlayer.getInstance().getData().set(this.uuid + ".color", this.color.getID());
 
         try {
@@ -195,6 +216,10 @@ public class MPlayer {
         return this.actionBar;
     }
 
+    public final boolean isVisible() {
+        return this.visible;
+    }
+
     public final ColorData getColor() {
         return this.color;
     }
@@ -220,8 +245,7 @@ public class MPlayer {
     }
 
     public final boolean canUse(ColorData colorData) {
-        return getPlayer().hasPermission(MentionPlayer.getInstance().getConfig().getString("option.permission.color." +
-                colorData.getID().toLowerCase().replaceAll(" ", "-")));
+        return getPlayer().hasPermission(colorData.getPermission());
     }
 
 }

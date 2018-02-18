@@ -3,7 +3,9 @@ package fr.triozer.mentionplayer.misc;
 import fr.triozer.mentionplayer.MentionPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * @author Cédric / Triozer
@@ -51,7 +53,7 @@ public class Settings {
                 .replace("{player-name}", playerName)
                 .replace("{tag}", getTag());
 
-        return color == ColorData.RAINBOW ? color.rainbow(replace) : color.getChatColor() + replace;
+        return color.parse(replace);
     }
 
     public static String formatActionBar(ColorData color, String playerName) {
@@ -60,11 +62,9 @@ public class Settings {
                 .replace("{player-name}", playerName)
                 .replace("{tag}", getTag());
 
-        String replace = MentionPlayer.getInstance().getConfig().getString("format.action-bar")
+        return MentionPlayer.getInstance().getConfig().getString("format.action-bar")
                 .replaceAll("&", "§")
-                .replace("{player-name}", color == ColorData.RAINBOW ? color.rainbow(target) : color.getChatColor() + target);
-
-        return replace;
+                .replace("{player-name}", color.parse(target));
     }
 
     public static Sound getSound() {
@@ -93,4 +93,21 @@ public class Settings {
         return MentionPlayer.getInstance().getConfig().getBoolean("option.update-notifier");
     }
 
+    public static void registerColors() {
+        ConfigurationSection section = MentionPlayer.getInstance().getConfig().getConfigurationSection("colors");
+
+        section.getKeys(false).forEach(key -> {
+            ConfigurationSection color   = section.getConfigurationSection(key);
+            String[]             pattern = color.getString("pattern").replace("§", "").split(",");
+
+            ChatColor[] chatColors = new ChatColor[pattern.length];
+            DyeColor[]  dyeColors  = new DyeColor[pattern.length];
+            for (int i = 0; i < pattern.length; i++) {
+                chatColors[i] = ChatColor.getByChar(pattern[i]);
+                dyeColors[i] = Utils.COLORS.get(chatColors[i].asBungee());
+            }
+            new ColorData(color.getString("name"), color.getString("permission"), chatColors, dyeColors, true);
+        });
+
+    }
 }

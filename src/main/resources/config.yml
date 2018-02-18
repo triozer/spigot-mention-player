@@ -4,6 +4,14 @@ format:
     chat: "&l{tag}{player-name}"
     action-bar: "&6{player-name} &7mentioned you."
 
+# New version support custom color tag.
+#
+# colors:
+#    french:
+#        name: "Le style français" # this name will be showed in the gui
+#        pattern: "§b,§f,§c" # separate the colors of the tag with a comma (bold.. dont work)
+#        permission: "mention.color.french" # permissions to use this tag
+
 message:
     action-bar-on: "&aMentions will now be displayed in the action bar."
     action-bar-off: "&cMentions will no longer be displayed in the action bar."
@@ -12,9 +20,13 @@ message:
     sound-off: "&cMentions sounds are now deactivated."
     toggle-on: "&aYou can now be mentioned."
     toggle-off: "&cYou can no longer be mentioned."
+    visible-on: "&aOther players will see when you get mentioned."
+    visible-off: "&cOther players will no longer see when you get mentioned."
     error:
         already-on: "&cMentions are already toggled on."
         already-off: "&cMentions are already toggled off."
+        already-visible: "&cYour mentions are already visible to other players."
+        already-hidden: "&cYour mentions are already hidden to other players."
         action-bar-already-on: "&cMentions are already toggle on for the action bar."
         action-bar-already-off: "&cMentions are already toggled off for the action bar."
         sound-already-on: "&cMentions sounds are already toggled on."
@@ -37,6 +49,7 @@ option:
         color: "Orange" # list of all colors and correspondence : https://github.com/Triozer/spigot-mention-player/blob/master/src/colors.
         mention: true
         sound: true
+        visible: false
     permission:
         bypass-action-bar: "mention.bypass-action-bar" # force sending mention to the action bar.
         bypass-anti-spam: "mention.bypass-anti-spam" # bypass the anti spam interval.
@@ -44,7 +57,7 @@ option:
         bypass-sound: "mention.bypass-sound" # force playing sound by mentioning a player who does not allow sounds.
         check-update: "mention.check-update" # allow player to check new update.
         color:
-            use: "mention.color.use" # permission to custom color of tag.
+            use: "mention.color.use" # permission to change tag.
             black: "mention.color.black"
             blue: "mention.color.blue"
             cyan: "mention.color.cyan"

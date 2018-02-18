@@ -1,15 +1,42 @@
 package fr.triozer.mentionplayer.misc;
 
+import com.google.common.collect.ImmutableMap;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Cédric / Triozer
  */
 public class Utils {
+
+    public static final Map<ChatColor, DyeColor> COLORS = ImmutableMap.<ChatColor, DyeColor>builder()
+            .putAll(new HashMap<ChatColor, DyeColor>() {
+                {
+                    put(ChatColor.AQUA, DyeColor.LIGHT_BLUE);
+                    put(ChatColor.BLACK, DyeColor.BLACK);
+                    put(ChatColor.BLUE, DyeColor.BLUE);
+                    put(ChatColor.DARK_AQUA, DyeColor.CYAN);
+                    put(ChatColor.DARK_BLUE, DyeColor.BLUE);
+                    put(ChatColor.DARK_GRAY, DyeColor.GRAY);
+                    put(ChatColor.DARK_GREEN, DyeColor.GREEN);
+                    put(ChatColor.DARK_PURPLE, DyeColor.PURPLE);
+                    put(ChatColor.DARK_RED, DyeColor.RED);
+                    put(ChatColor.GOLD, DyeColor.ORANGE);
+                    put(ChatColor.GRAY, DyeColor.SILVER);
+                    put(ChatColor.GREEN, DyeColor.LIME);
+                    put(ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA);
+                    put(ChatColor.RED, DyeColor.RED);
+                    put(ChatColor.WHITE, DyeColor.WHITE);
+                    put(ChatColor.YELLOW, DyeColor.YELLOW);
+                }
+            }).build();
 
     public static void sendActionBar(Player player, String message) {
         String version = Bukkit.getServer().getClass().getPackage().getName();

@@ -55,12 +55,9 @@ public class PlayerChatListener implements Listener {
 
                     if (mentionEvent.isCancelled()) return;
 
-                    event.getRecipients().remove(player);
-
                     String mention = Settings.textColor() + event.getMessage().replace(
-
                             Settings.getTag() + player.getName(),
-                            mentionEvent.getColor().getChatColor() + Settings.formatChat(mentionEvent.getColor(), player.getName()) + Settings.textColor());
+                            Settings.formatChat(mentionEvent.getColor(), player.getName()) + Settings.textColor());
 
                     String message = String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention);
 
@@ -69,7 +66,13 @@ public class PlayerChatListener implements Listener {
                     if (sender.canBypassActionBar() || mPlayer.canReceiveActionBar())
                         Utils.sendActionBar(player, Settings.formatActionBar(mentionEvent.getColor(), sender.getPlayer().getName()));
 
-                    player.sendMessage(message);
+                    if (mPlayer.isVisible()) {
+                        event.setFormat(message);
+                    } else {
+                        event.getRecipients().remove(player);
+                        player.sendMessage(message);
+                    }
+
                 }
             }
         }

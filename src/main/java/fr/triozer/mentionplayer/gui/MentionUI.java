@@ -44,13 +44,19 @@ public class MentionUI {
                 .durability(mPlayer.canReceiveActionBar() ? 10 : 8)
                 .build();
 
+        ItemStack visible = new ItemBuilder(Material.INK_SACK)
+                .name("§r§6Visible")
+                .lore("", "§7» " + (mPlayer.isVisible() ? "§cDeactivate" : "§aActivate") + " visibility of your tag.", "(only for other player)", "")
+                .durability(mPlayer.isVisible() ? 10 : 8)
+                .build();
+
         ItemBuilder color = new ItemBuilder(Material.WOOL)
                 .name("§r§6Color")
                 .lore("", "§7» Choose your mention color.", "");
 
         InventoryBuilder contents = new InventoryBuilder("§b» Options", 3 * 9, true)
                 .fill(EMPTY)
-                .setItem(12, ClickableItem.of(sound,
+                .setItem(11, ClickableItem.of(sound,
                         event -> {
                             if (mPlayer.isSoundable()) mPlayer.disableSound();
                             else mPlayer.enableSound();
@@ -60,7 +66,7 @@ public class MentionUI {
                             event.getCurrentItem().setItemMeta(meta);
                             event.getCurrentItem().setDurability((short) (mPlayer.isSoundable() ? 10 : 8));
                         }))
-                .setItem(13, ClickableItem.of(mention,
+                .setItem(12, ClickableItem.of(mention,
                         event -> {
                             if (mPlayer.isMentionable()) mPlayer.disableMention();
                             else mPlayer.enableMention();
@@ -70,7 +76,7 @@ public class MentionUI {
                             event.getCurrentItem().setItemMeta(meta);
                             event.getCurrentItem().setDurability((short) (mPlayer.isMentionable() ? 10 : 8));
                         }))
-                .setItem(14, ClickableItem.of(action,
+                .setItem(13, ClickableItem.of(action,
                         event -> {
                             if (mPlayer.canReceiveActionBar()) mPlayer.disableActionBar();
                             else mPlayer.enableActionBar();
@@ -79,15 +85,22 @@ public class MentionUI {
                             meta.setLore(Arrays.asList("", "§7» " + (mPlayer.canReceiveActionBar() ? "§cDeactivate" : "§aActivate") + " actionbar's notifications.", ""));
                             event.getCurrentItem().setItemMeta(meta);
                             event.getCurrentItem().setDurability((short) (mPlayer.canReceiveActionBar() ? 10 : 8));
+                        }))
+                .setItem(14, ClickableItem.of(visible,
+                        event -> {
+                            if (mPlayer.isVisible()) mPlayer.hideForAll();
+                            else mPlayer.showForAll();
+
+                            ItemMeta meta = event.getCurrentItem().getItemMeta();
+                            meta.setLore(Arrays.asList("", "§7» " + (mPlayer.isVisible() ? "§cDeactivate" : "§aActivate") + " visibility of your tag.", "(only for other player)", ""));
+                            event.getCurrentItem().setItemMeta(meta);
+                            event.getCurrentItem().setDurability((short) (mPlayer.isVisible() ? 10 : 8));
                         }));
 
         if (mPlayer.canColor()) {
-
-            if (mPlayer.getColor() != ColorData.RAINBOW)
-                contents.setItem(16, ClickableItem.of(color
-                        .durability(mPlayer.getColor().getDyeColor().getWoolData())
-                        .build(), event -> openColor(mPlayer)));
-            else {
+            if (mPlayer.getColor() == ColorData.RAINBOW || mPlayer.getColor().isCustom()) {
+                // hack this shit x)
+                final int[] tries = {0};
                 new BukkitRunnable() {
                     Random random = new Random();
 
@@ -99,39 +112,50 @@ public class MentionUI {
                             contents.setItem(16, ClickableItem.of(new ItemBuilder(Material.WOOL)
                                             .name("§r§6Color")
                                             .lore("", "§7» Choose your mention color.", "")
-                                            .durability(DyeColor.values()[random.nextInt(16)].getWoolData()),
+                                            .durability((mPlayer.getColor().isCustom() ?
+                                                    mPlayer.getColor().getDyeColor()[tries[0]++] :
+                                                    DyeColor.values()[random.nextInt(16)]
+                                            ).getWoolData()),
+
                                     event -> {
                                         openColor(mPlayer);
                                         cancel();
                                     }));
+
+                            if (tries[0] == mPlayer.getColor().getDyeColor().length) tries[0] = 0;
                         } else cancel();
                     }
                 }.runTaskTimerAsynchronously(MentionPlayer.getInstance(), 1L, 5L);
 
-            }
+            } else contents.setItem(16, ClickableItem.of(color
+                    .durability(mPlayer.getColor().getDyeColor()[0].getWoolData())
+                    .build(), event -> openColor(mPlayer)));
         }
 
         player.openInventory(contents.build());
     }
 
     private static void openColor(MPlayer player) {
-
         ItemStack back = new ItemBuilder(Material.ARROW)
                 .name("§r§6Back")
                 .lore("", "§7» Return to options menu.", "")
                 .build();
 
-        InventoryBuilder color = new InventoryBuilder("§b» Color", 3 * 9, true)
+        int size = Math.round((float) MentionPlayer.getInstance().getColors().size() / 9f) * 9 + 9;
+        System.out.println(size);
+        InventoryBuilder color = new InventoryBuilder("§b» Color",
+                size, true)
                 .fill(EMPTY)
-                .setItem(26, ClickableItem.of(back, event -> open(player.getPlayer())));
+                .setItem(size - 1, ClickableItem.of(back, event -> open(player.getPlayer())));
 
-        for (int i = 0; i < ColorData.values().length; i++) {
-            ColorData colorData = ColorData.values()[i];
-
+        int slot = 0;
+        for (ColorData colorData : MentionPlayer.getInstance().getColors().values()) {
             if (!player.canUse(colorData)) continue;
 
-            if (colorData == ColorData.RAINBOW) {
-                int finalI = i;
+            if (colorData == ColorData.RAINBOW || colorData.isCustom()) {
+                int finalI = slot;
+                // hack this shit x)
+                final int[] tries = {0};
                 new BukkitRunnable() {
                     Random random = new Random();
 
@@ -141,32 +165,37 @@ public class MentionUI {
 
                         if (player.getPlayer().getOpenInventory().getTopInventory().equals(color.build())) {
                             color.setItem(finalI, ClickableItem.of(new ItemBuilder(Material.WOOL)
-                                            .name(colorData.rainbow(colorData.getID()))
-                                            .durability(DyeColor.values()[random.nextInt(16)].getWoolData()),
+                                            .name(colorData.parse(colorData.getName()))
+                                            .durability((colorData.isCustom() ?
+                                                    colorData.getDyeColor()[tries[0]++]
+                                                    : DyeColor.values()[random.nextInt(16)]
+                                            ).getWoolData()),
                                     event -> {
                                         player.changeColor(colorData);
                                         openColor(player);
                                         cancel();
                                     }));
+                            if (tries[0] == colorData.getDyeColor().length) tries[0] = 0;
                         } else cancel();
                     }
                 }.runTaskTimerAsynchronously(MentionPlayer.getInstance(), 1L, 5L);
 
             } else if (player.getColor() == colorData)
-                color.setItem(i, ClickableItem.empty(new ItemBuilder(Material.STAINED_GLASS_PANE)
-                        .name(colorData.getChatColor() + colorData.getID())
+                color.setItem(slot, ClickableItem.empty(new ItemBuilder(Material.STAINED_GLASS_PANE)
+                        .name(colorData.parse(colorData.getName()))
                         .lore("", "§7» This is your actual tag color.", "")
-                        .durability(colorData.getDyeColor().getWoolData())));
+                        .durability(colorData.getDyeColor()[0].getWoolData())));
             else {
-                color.setItem(i, ClickableItem.of(new ItemBuilder(Material.WOOL)
-                                .name(colorData.getChatColor() + colorData.getID())
-                                .durability(colorData.getDyeColor().getWoolData()),
+                color.setItem(slot, ClickableItem.of(new ItemBuilder(Material.WOOL)
+                                .name(colorData.parse(colorData.getName()))
+                                .durability(colorData.getDyeColor()[0].getWoolData()),
                         event -> {
                             player.changeColor(colorData);
                             openColor(player);
                         }
                 ));
             }
+            slot++;
         }
 
         player.getPlayer().openInventory(color.build());
