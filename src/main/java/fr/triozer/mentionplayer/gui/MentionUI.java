@@ -142,7 +142,6 @@ public class MentionUI {
                 .build();
 
         int size = Math.round((float) MentionPlayer.getInstance().getColors().size() / 9f) * 9 + 9;
-        System.out.println(size);
         InventoryBuilder color = new InventoryBuilder("§b» Color",
                 size, true)
                 .fill(EMPTY)
