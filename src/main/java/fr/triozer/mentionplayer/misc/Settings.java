@@ -95,6 +95,7 @@ public class Settings {
 
     public static void registerColors() {
         ConfigurationSection section = MentionPlayer.getInstance().getConfig().getConfigurationSection("colors");
+        if (section == null) return;
 
         section.getKeys(false).forEach(key -> {
             ConfigurationSection color   = section.getConfigurationSection(key);
