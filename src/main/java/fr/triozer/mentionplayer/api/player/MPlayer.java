@@ -71,7 +71,7 @@ public class MPlayer {
 
         getPlayer().sendMessage(get("message.color")
                 .replace("{last}", color.parse(color.getName()))
-                .replace("{new}", newColor.parse(color.getName())));
+                .replace("{new}", newColor.parse(newColor.getName())));
 
         this.color = newColor;
     }

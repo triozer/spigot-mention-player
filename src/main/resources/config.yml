@@ -5,12 +5,12 @@ format:
     action-bar: "&6{player-name} &7mentioned you."
 
 # New version support custom color tag.
-#
-# colors:
-#    french:
-#        name: "Le style français" # this name will be showed in the gui
-#        pattern: "§b,§f,§c" # separate the colors of the tag with a comma (bold.. dont work)
-#        permission: "mention.color.french" # permissions to use this tag
+
+colors:
+   french:
+       name: "French Style" # this name will be showed in the gui
+       pattern: "b,f,c" # separate the colors of the tag with a comma (bold.. dont work)
+       permission: "mention.color.french" # permissions to use this tag
 
 message:
     action-bar-on: "&aMentions will now be displayed in the action bar."

@@ -99,7 +99,7 @@ public class Settings {
 
         section.getKeys(false).forEach(key -> {
             ConfigurationSection color   = section.getConfigurationSection(key);
-            String[]             pattern = color.getString("pattern").replace("§", "").split(",");
+            String[]             pattern = color.getString("pattern").replace("&", "").split(",");
 
             ChatColor[] chatColors = new ChatColor[pattern.length];
             DyeColor[]  dyeColors  = new DyeColor[pattern.length];
