@@ -55,24 +55,21 @@ public class PlayerChatListener implements Listener {
 
                     if (mentionEvent.isCancelled()) return;
 
-                    String mention = Settings.textColor() + event.getMessage().replace(
-                            Settings.getTag() + player.getName(),
-                            Settings.formatChat(mentionEvent.getColor(), player.getName()) + Settings.textColor());
-
-                    String message = String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention);
-
                     if (sender.canBypassSound() || mPlayer.isSoundable())
                         player.playSound(player.getLocation(), Settings.getSound(), 1f, 1f);
                     if (sender.canBypassActionBar() || mPlayer.canReceiveActionBar())
                         Utils.sendActionBar(player, Settings.formatActionBar(mentionEvent.getColor(), sender.getPlayer().getName()));
 
+                    String mention = Settings.textColor() + event.getMessage().replace(
+                            Settings.getTag() + player.getName(),
+                            Settings.formatChat(mentionEvent.getColor(), player.getName()) + Settings.textColor());
+
                     if (mPlayer.isVisible()) {
-                        event.setFormat(message);
+                        event.setMessage(mention);
                     } else {
                         event.getRecipients().remove(player);
-                        player.sendMessage(message);
+                        player.sendMessage(String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention));
                     }
-
                 }
             }
         }
