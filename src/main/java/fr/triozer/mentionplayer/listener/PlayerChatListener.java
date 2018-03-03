@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,19 +21,28 @@ public class PlayerChatListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage().contains(Settings.getTag())) {
+        if (Settings.hasTag(event.getMessage())) {
             List<Player> players = new ArrayList<>();
+            String       tag     = Settings.getOnlyTag();
+            String       one     = "";
+
+            if (tag.length() == 0)
+                one = "";
+            else if (tag.length() == 1) {
+                char c = tag.charAt(0);
+                if (c == '*' || c == '!' || c == '$' || c == '^' || c == '+' || c == '\\' || c == '.' || c == '{' || c == '}')
+                    one += MessageFormat.format("{0}{1}{2}", '\\', c, "{1}");
+                else one = tag;
+            } else one += "[" + tag + "]{" + tag.length() + "}";
 
             for (Player online : Bukkit.getOnlinePlayers())
                 for (String word : event.getMessage().split(" ")) {
-                    if (word.startsWith(Settings.getTag()))
-                        if (word.contentEquals(Settings.getTag() + online.getName())
-                                || word.contentEquals(Settings.getTag() + online.getCustomName())
-                                || word.contentEquals(Settings.getTag() + online.getDisplayName())) {
-                            players.add(online);
-                        }
+                    String regex = "(^" + one + "[" + online.getName() + "]{" + online.getName().length() + "}" +
+                            "[\\^*()_+=\\[\\]{}|\\\\,.?!:<>'\"\\/;`%¨-]*(?!.*[ ])$)";
+                    if (word.matches(regex)) {
+                        players.add(online);
+                    }
                 }
-
 
             if (players.isEmpty()) return;
 
@@ -41,12 +51,12 @@ public class PlayerChatListener implements Listener {
             for (Player player : players) {
                 MPlayer mPlayer = MPlayer.get(player);
 
-                if (!mPlayer.canBypassAntiSpam() && System.currentTimeMillis() - mPlayer.getLastMessage() <= Settings.getInterval()) {
+                if (!sender.canBypassAntiSpam() && System.currentTimeMillis() - sender.getLastMessage() <= Settings.getInterval()) {
                     sender.spam();
                     return;
                 }
 
-                mPlayer.setLastMessage(System.currentTimeMillis());
+                sender.setLastMessage(System.currentTimeMillis());
 
                 if (sender.canBypassMention() || mPlayer.isMentionable()) {
 
@@ -58,17 +68,16 @@ public class PlayerChatListener implements Listener {
                     if (sender.canBypassSound() || mPlayer.isSoundable())
                         player.playSound(player.getLocation(), Settings.getSound(), 1f, 1f);
                     if (sender.canBypassActionBar() || mPlayer.canReceiveActionBar())
-                        Utils.sendActionBar(player, Settings.formatActionBar(mentionEvent.getColor(), sender.getPlayer().getName()));
+                        Utils.sendActionBar(player, Settings.formatActionBar(sender.getPlayer().getName()));
 
                     String mention = Settings.textColor() + event.getMessage().replace(
-                            Settings.getTag() + player.getName(),
+                            tag + player.getName(),
                             Settings.formatChat(mentionEvent.getColor(), player.getName()) + Settings.textColor());
 
+                    event.getRecipients().remove(player);
+                    player.sendMessage(String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention));
                     if (mPlayer.isVisible()) {
                         event.setMessage(mention);
-                    } else {
-                        event.getRecipients().remove(player);
-                        player.sendMessage(String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention));
                     }
                 }
             }

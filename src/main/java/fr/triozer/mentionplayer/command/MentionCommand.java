@@ -4,13 +4,13 @@ import fr.triozer.mentionplayer.MentionPlayer;
 import fr.triozer.mentionplayer.api.player.MPlayer;
 import fr.triozer.mentionplayer.gui.MentionUI;
 import fr.triozer.mentionplayer.misc.Settings;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,18 +102,21 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
         } else if ("update".equalsIgnoreCase(args[0])
                 && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
                 .getString("option.permission.check-update"))) {
+            Bukkit.getScheduler().runTaskAsynchronously(MentionPlayer.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        player.getPlayer().sendMessage("§aSearching for updates.");
 
-            try {
-                player.getPlayer().sendMessage("§aSearching for updates.");
-
-                if (MentionPlayer.update("https://rest.c-dric.eu/api/plugins/mention"))
-                    player.getPlayer().sendMessage("§dPlease update the plugin for a better support.");
-                else
-                    player.getPlayer().sendMessage("§eNo update found !");
-            } catch (Exception e) {
-                player.getPlayer().sendMessage("§cCan't check for update");
-            }
-
+                        if (MentionPlayer.update("https://rest.c-dric.eu/api/plugins/mention"))
+                            player.getPlayer().sendMessage("§dPlease update the plugin for a better support.");
+                        else
+                            player.getPlayer().sendMessage("§eNo update found !");
+                    } catch (Exception e) {
+                        player.getPlayer().sendMessage("§cCan't check for update");
+                    }
+                }
+            });
         } else {
             return false;
         }
@@ -131,43 +134,35 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
 
         List<String> subcommand = new ArrayList<>();
 
-        if (args.length == 1) {
-            if (args[0].startsWith("a")) {
-                subcommand.add("actionbar");
-            } else if (Settings.canGUI() && args[0].startsWith("g")) {
-                subcommand.add("gui");
-            } else if (args[0].startsWith("s")) {
-                subcommand.add("sound");
-            } else if (args[0].startsWith("o")) {
-                subcommand.add("on");
-                subcommand.add("off");
-            } else if (args[0].startsWith("r")
-                    && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
-                    .getString("option.permission.reload"))) {
-                subcommand.add("reload");
-            } else if (args[0].startsWith("u")
-                    && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
-                    .getString("option.permission.check-update"))) {
-                subcommand.add("update");
-            } else {
-                subcommand.add("actionbar");
-                if (Settings.canGUI()) subcommand.add("gui");
-                subcommand.add("on");
-                subcommand.add("off");
-                subcommand.add("sound");
-
-                if (commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
-                        .getString("option.permission.check-update")))
-                    subcommand.add("update");
-
-                if (commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
-                        .getString("option.permission.reload")))
-                    subcommand.add("reload");
-            }
+        if (args.length == 0) {
+            subcommand.add("actionbar");
+            if (Settings.canGUI()) subcommand.add("gui");
+            subcommand.add("on");
+            subcommand.add("off");
+            subcommand.add("sound");
+            if (commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                    .getString("option.permission.reload"))) subcommand.add("update");
+            if (commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                    .getString("option.permission.reload"))) subcommand.add("reload");
+        } else if (args.length == 1) {
+            String arg = args[0].toLowerCase();
+            if ("actionbar".startsWith(arg)) subcommand.add("actionbar");
+            if ("color".startsWith(arg)) subcommand.add("color");
+            if (Settings.canGUI() && "gui".startsWith(arg)) subcommand.add("gui");
+            if ("sound".startsWith(arg)) subcommand.add("sound");
+            if ("visible".startsWith(arg)) subcommand.add("visible");
+            if ("on".startsWith(arg)) subcommand.add("on");
+            if ("off".startsWith(arg)) subcommand.add("off");
+            if ("reload".startsWith(arg) && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                    .getString("option.permission.reload"))) subcommand.add("reload");
+            if ("update".startsWith(arg) && commandSender.hasPermission(MentionPlayer.getInstance().getConfig()
+                    .getString("option.permission.reload"))) subcommand.add("update");
         } else if (args.length == 2) {
-            if ("actionbar".equalsIgnoreCase(args[0]) || "sound".equalsIgnoreCase(args[0])) {
-                subcommand.add("on");
-                subcommand.add("off");
+            String arg  = args[0].toLowerCase();
+            String arg2 = args[1].toLowerCase();
+            if ("actionbar".equalsIgnoreCase(arg) || "sound".equalsIgnoreCase(arg) || "visible".equalsIgnoreCase(arg)) {
+                if ("on".startsWith(arg2)) subcommand.add("on");
+                if ("off".startsWith(arg2)) subcommand.add("off");
             }
         }
 

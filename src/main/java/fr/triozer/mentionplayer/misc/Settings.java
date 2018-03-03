@@ -7,13 +7,30 @@ import org.bukkit.DyeColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static net.md_5.bungee.api.ChatColor.*;
+
 /**
  * @author Cédric / Triozer
  */
 public class Settings {
 
     public static String getTag() {
-        return MentionPlayer.getInstance().getConfig().getString("option.tag");
+        return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&',
+                MentionPlayer.getInstance().getConfig().getString("option.tag"));
+    }
+
+    public static boolean hasTag(String message) {
+        return message.contains(getOnlyTag());
+    }
+
+    public static String getOnlyTag() {
+        String[] split = Settings.getTag().split("(§.)");
+        return split[split.length == 0 ? 0 : split.length - 1];
     }
 
     public static boolean canGUI() {
@@ -53,18 +70,13 @@ public class Settings {
                 .replace("{player-name}", playerName)
                 .replace("{tag}", getTag());
 
-        return color.parse(replace);
+        return getTag() + color.parse(replace.replace(getTag(), ""));
     }
 
-    public static String formatActionBar(ColorData color, String playerName) {
-        String target = MentionPlayer.getInstance().getConfig().getString("format.chat")
-                .replaceAll("&", "§")
-                .replace("{player-name}", playerName)
-                .replace("{tag}", getTag());
-
-        return MentionPlayer.getInstance().getConfig().getString("format.action-bar")
-                .replaceAll("&", "§")
-                .replace("{player-name}", color.parse(target));
+    public static String formatActionBar(String playerName) {
+        return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&',
+                MentionPlayer.getInstance().getConfig().getString("format.action-bar")
+                        .replace("{player-name}", playerName));
     }
 
     public static Sound getSound() {
@@ -93,22 +105,44 @@ public class Settings {
         return MentionPlayer.getInstance().getConfig().getBoolean("option.update-notifier");
     }
 
+    /**
+     * Registers custom colors from the configurations file.
+     */
     public static void registerColors() {
+        // clear all the custom tags (e.g. /mention reload)
+        Set<String> values = new HashSet<>();
+        for (ColorData colorData : MentionPlayer.getInstance().getColors().values())
+            if (colorData.isCustom()) values.add(colorData.getID());
+        for (String value : values) MentionPlayer.getInstance().getColors().remove(value);
+
         ConfigurationSection section = MentionPlayer.getInstance().getConfig().getConfigurationSection("colors");
         if (section == null) return;
 
         section.getKeys(false).forEach(key -> {
-            ConfigurationSection color   = section.getConfigurationSection(key);
-            String[]             pattern = color.getString("pattern").replace("&", "").split(",");
+            ConfigurationSection color = section.getConfigurationSection(key);
 
-            ChatColor[] chatColors = new ChatColor[pattern.length];
-            DyeColor[]  dyeColors  = new DyeColor[pattern.length];
-            for (int i = 0; i < pattern.length; i++) {
-                chatColors[i] = ChatColor.getByChar(pattern[i]);
-                dyeColors[i] = Utils.COLORS.get(chatColors[i].asBungee());
+            String[]                            pattern    = color.getString("pattern").replace("&", "").split(",");
+            String[]                            clone      = pattern.clone();
+            List<net.md_5.bungee.api.ChatColor> chatColors = new ArrayList<>();
+            List<DyeColor>                      dyeColors  = new ArrayList<>();
+
+            for (int i = 0; i < clone.length; i++) {
+                for (String code : clone[i].split("")) {
+                    net.md_5.bungee.api.ChatColor chatColor = net.md_5.bungee.api.ChatColor.getByChar(code.charAt(0));
+                    if (chatColor == null) {
+                        MentionPlayer.LOG.error("The plugin can't find color '" + RED + code.charAt(0) + GRAY + "'." +
+                                "Custom color '" + YELLOW + color.getString("name") + "'" + GRAY + " will not be loaded.");
+                        return;
+                    }
+                    chatColors.add(chatColor);
+                    if (!ColorData.isMagic(chatColor)) dyeColors.add(Utils.COLORS.get(chatColor));
+                }
             }
-            new ColorData(color.getString("name"), color.getString("permission"), chatColors, dyeColors, true);
+
+            new ColorData(color.getString("name"), color.getString("permission"),
+                    chatColors.toArray(new net.md_5.bungee.api.ChatColor[0]), dyeColors.toArray(new DyeColor[0]), true);
         });
 
     }
+
 }

@@ -86,6 +86,10 @@ public class MentionPlayer extends JavaPlugin {
                     LOG.error("Can't check for update");
                 }
             });
+        } else LOG.warning("The update checker is currently off, you can enable t in the configuration file.");
+
+        if (!Settings.canTabComplete()) {
+            LOG.warning("Your players can't use tab-completion because you disabled this feature.");
         }
 
         if (!Settings.canGUI()) {

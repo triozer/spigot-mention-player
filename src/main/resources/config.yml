@@ -1,7 +1,7 @@
 format:
     # Colors can be found here : https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html.
     text-color: "GRAY" # color of the text (c.f. - make the tag most visible)
-    chat: "&l{tag}{player-name}"
+    chat: "{tag}{player-name}"
     action-bar: "&6{player-name} &7mentioned you."
 
 # New version support custom color tag.
@@ -9,7 +9,7 @@ format:
 colors:
    french:
        name: "French Style" # this name will be showed in the gui
-       pattern: "b,f,c" # separate the colors of the tag with a comma (bold.. dont work)
+       pattern: "b,f,c" # separate the colors of the tag with a comma
        permission: "mention.color.french" # permissions to use this tag
 
 message:
@@ -34,16 +34,16 @@ message:
         spam: "&cYou can't spam like this."
 
 option:
-    update-notifier: true # check update on starting
+    update-notifier: false # check update on starting
     anti-spam:
         enable: true
         interval: 5 # in second
     # Sounds by version can be found here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
     # For 1.8 please change this to : NOTE_PLING
-    gui: true
     sound: "BLOCK_NOTE_PLING"
+    gui: true
     tab-complete: true
-    tag: "@"
+    tag: "&6@"
     default: # default value
         action-bar: true
         color: "Orange" # list of all colors and correspondence : https://github.com/Triozer/spigot-mention-player/blob/master/src/colors.

@@ -16,15 +16,16 @@ public class PlayerTabCompleteListener implements Listener {
     public void onTabComplete(PlayerChatTabCompleteEvent event) {
         String lastToken = event.getLastToken();
 
-        if (!Settings.canTabComplete() || !lastToken.startsWith(Settings.getTag())) return;
+        if (!Settings.canTabComplete() || (Settings.getOnlyTag().length() > 0 && !lastToken.startsWith(Settings.getOnlyTag())))
+            return;
 
         event.getTabCompletions().clear();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (lastToken.length() == 1) {
-                event.getTabCompletions().add(Settings.getTag() + player.getName());
+                event.getTabCompletions().add(Settings.getOnlyTag() + player.getName());
             } else if (player.getName().startsWith(event.getLastToken().substring(1))) {
-                event.getTabCompletions().add(Settings.getTag() + player.getName());
+                event.getTabCompletions().add(Settings.getOnlyTag() + player.getName());
             }
         }
     }
