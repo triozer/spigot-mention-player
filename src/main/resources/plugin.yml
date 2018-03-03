@@ -3,7 +3,7 @@ name: MentionPlayer
 main: fr.triozer.mentionplayer.MentionPlayer
 author: Triozer
 website: https://c-dric.eu
-version: 1.13.3
+version: 1.13.4
 
 description: Mention a player.
 
