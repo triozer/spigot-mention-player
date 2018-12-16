@@ -266,20 +266,27 @@ public class MentionPlayer extends JavaPlugin {
 
     private boolean update() {
         try {
-            URL               url        = new URL("https://api.triozer.fr/plugins/mention-player");
+            URL               url        = new URL("https://api.triozer.fr/plugins/1");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
 
             if (connection.getResponseCode() != 200) {
-                LOG.warning("Can't get last version from https://api.triozer.fr/plugins/mention-player");
+                LOG.warning("Can't get last version from " + url.toString());
                 return false;
             }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-            this.lastVersion = new JsonParser().parse(reader.readLine()).getAsJsonObject().get("version").getAsString();
+            StringBuilder a = new StringBuilder();
+			String        str;
+			while ((str = reader.readLine()) != null) {
+				a.append(str);
+			}
+			reader.close();
+
+			this.lastVersion = new JsonParser().parse(a.toString()).getAsJsonObject().get("version").getAsString();
 
             if (this.lastVersion.isEmpty()) return false;
             else if (!this.lastVersion.matches("(?!\\.)(\\d+(\\.\\d+)+)(?:[-.]+)?(?![\\d.])$")) return false;
@@ -287,7 +294,8 @@ public class MentionPlayer extends JavaPlugin {
             return !getDescription().getVersion().equals(this.lastVersion);
         } catch (Exception e) {
             LOG.error("Can't check for update");
-            return false;
+			e.printStackTrace();
+			return false;
         }
     }
 
