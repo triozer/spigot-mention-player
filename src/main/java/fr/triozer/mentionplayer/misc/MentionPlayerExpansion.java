@@ -46,7 +46,6 @@ public class MentionPlayerExpansion extends PlaceholderExpansion {
 			return Settings.formatChat(mPlayer.getColor(), mPlayer);
 		} else if (identifier.contains("color")) {
 			String[] args = identifier.split(" ");
-			System.out.println(Arrays.toString(args));
 			if (args.length > 1) {
 				ColorData color = ColorData.get(args[1]);
 				if (color == null) return ChatColor.RED + "bad color id '" + args[1] + "'" + ChatColor.RESET;
