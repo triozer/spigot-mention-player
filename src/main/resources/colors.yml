@@ -1,0 +1,20 @@
+# If not used remove it.
+french:
+    name: 'Baguette' # this name will be showed in the gui
+    pattern: '&b,&f,&c' # separate the colors of the tag with a comma
+    permission: 'mention.color.french' # permissions to use this color
+
+italian:
+    name: 'Pepperoni' # this name will be showed in the gui
+    pattern: '&a,&f,&c' # separate the colors of the tag with a comma
+    permission: 'mention.color.italian' # permissions to use this color
+
+belgium:
+    name: 'Beer' # this name will be showed in the gui
+    pattern: '&0,&e,&c' # separate the colors of the tag with a comma
+    permission: 'mention.color.belgium' # permissions to use this color
+
+german:
+    name: 'Danke' # this name will be showed in the gui
+    pattern: '&0,&c,&e' # separate the colors of the tag with a comma
+    permission: 'mention.color.german' # permissions to use this color

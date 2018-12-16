@@ -1,5 +1,8 @@
 package fr.triozer.mentionplayer.api.ui;
 
+import fr.triozer.mentionplayer.api.ui.builder.ItemBuilder;
+import fr.triozer.mentionplayer.misc.XMaterial;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -9,6 +12,9 @@ import java.util.function.Consumer;
  * @author Cédric / Triozer
  */
 public class ClickableItem {
+
+    public static final ClickableItem EMPTY = ClickableItem
+            .empty(new ItemBuilder(XMaterial.WHITE_STAINED_GLASS_PANE.parseMaterial()).name(" ").durability(15));
 
     private ItemStack                     item;
     private Consumer<InventoryClickEvent> consumer;

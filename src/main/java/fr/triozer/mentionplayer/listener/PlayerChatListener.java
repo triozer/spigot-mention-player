@@ -1,9 +1,16 @@
 package fr.triozer.mentionplayer.listener;
 
-import fr.triozer.mentionplayer.api.events.PlayerMentionEvent;
+import fr.triozer.mentionplayer.MentionPlayer;
+import fr.triozer.mentionplayer.api.event.PlayerMentionEvent;
 import fr.triozer.mentionplayer.api.player.MPlayer;
+import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
 import fr.triozer.mentionplayer.misc.Settings;
 import fr.triozer.mentionplayer.misc.Utils;
+import me.clip.deluxechat.DeluxeChat;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,8 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Cédric / Triozer
@@ -21,10 +27,13 @@ public class PlayerChatListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
+
         if (Settings.hasTag(event.getMessage())) {
             List<Player> players = new ArrayList<>();
             String       tag     = Settings.getOnlyTag();
             String       one     = "";
+            Set<String>  force   = new HashSet<>();
+            MPlayer      sender  = MPlayer.get(event.getPlayer());
 
             if (tag.length() == 0)
                 one = "";
@@ -37,51 +46,113 @@ public class PlayerChatListener implements Listener {
 
             for (Player online : Bukkit.getOnlinePlayers())
                 for (String word : event.getMessage().split(" ")) {
-                    String regex = "(^" + one + "[" + online.getName() + "]{" + online.getName().length() + "}" +
+                    String regex = "(^[" + Settings.allForcePrefix() + "]*" + one + "[" + online.getName() + "]{" + online.getName().length() + "}" +
                             "[\\^*()_+=\\[\\]{}|\\\\,.?!:<>'\"\\/;`%¨-]*(?!.*[ ])$)";
                     if (word.matches(regex)) {
+                        for (String letter : word.split("")) {
+                            if (letter.equals(tag)) break;
+
+                            if (Settings.getPrefix("actionbar").startsWith(letter) && sender.canBypassActionBar()) {
+                                force.add(online.getName() + "actionbar");
+                            }
+                            if (Settings.getPrefix("mention").startsWith(letter) && sender.canBypassMention()) {
+                                force.add(online.getName() + "mention");
+                            }
+                            if (Settings.getPrefix("popup").startsWith(letter) && sender.canBypassPopup()) {
+                                force.add(online.getName() + "popup");
+                            }
+                            if (Settings.getPrefix("sound").startsWith(letter) && sender.canBypassSound()) {
+                                force.add(online.getName() + "sound");
+                            }
+                        }
                         players.add(online);
                     }
                 }
 
             if (players.isEmpty()) return;
 
-            MPlayer sender = MPlayer.get(event.getPlayer());
-
             for (Player player : players) {
                 MPlayer mPlayer = MPlayer.get(player);
 
                 if (!sender.canBypassAntiSpam() && System.currentTimeMillis() - sender.getLastMessage() <= Settings.getInterval()) {
-                    sender.spam();
+                    sender.setLastMessage(System.currentTimeMillis());
+                    sender.sendSpamError();
+                    event.setCancelled(true);
                     return;
                 }
 
                 sender.setLastMessage(System.currentTimeMillis());
 
-                if (sender.canBypassMention() || mPlayer.isMentionable()) {
+                if (mPlayer.getIgnoredPlayers().contains(sender.getPlayer().getUniqueId())) {
+                    return;
+                }
 
-                    PlayerMentionEvent mentionEvent = new PlayerMentionEvent(event.getPlayer(), player);
+                if (force.contains(player.getName() + "mention") || mPlayer.allowMention()) {
+
+                    BukkitPopup popup = null;
+                    if (Settings.canPopup()) popup = mPlayer.createBukkitPopup(sender);
+
+                    PlayerMentionEvent mentionEvent = new PlayerMentionEvent(event.getPlayer(), player,
+                            Settings.canPopup() && (force.contains(player.getName() + "popup") || mPlayer.allowPopup()),
+                            popup);
                     Bukkit.getServer().getPluginManager().callEvent(mentionEvent);
 
                     if (mentionEvent.isCancelled()) return;
 
-                    if (sender.canBypassSound() || mPlayer.isSoundable())
-                        player.playSound(player.getLocation(), Settings.getSound(), 1f, 1f);
-                    if (sender.canBypassActionBar() || mPlayer.canReceiveActionBar())
-                        Utils.sendActionBar(player, Settings.formatActionBar(sender.getPlayer().getName()));
-
-                    String mention = Settings.textColor() + event.getMessage().replace(
-                            tag + player.getName(),
-                            Settings.formatChat(mentionEvent.getColor(), player.getName()) + Settings.textColor());
-
-                    event.getRecipients().remove(player);
-                    player.sendMessage(String.format(event.getFormat(), sender.getPlayer().getDisplayName(), mention));
-                    if (mPlayer.isVisible()) {
-                        event.setMessage(mention);
+                    if (force.contains(player.getName() + "sound") || mPlayer.allowSound()) {
+                        player.playSound(player.getLocation(), mPlayer.getSound(), 1f, 1f);
                     }
+                    if (force.contains(player.getName() + "actionbar") || mPlayer.allowActionbar()) {
+                        Utils.sendActionBar(player, Settings.formatActionBar(sender.getPlayer().getName()));
+                    }
+                    if (Settings.canPopup() && mentionEvent.canPopup()) {
+                        mentionEvent.getPopup().show(MentionPlayer.getInstance(), player);
+                    }
+
+                    String cleanMention = event.getMessage().replaceAll("[" + Settings.allForcePrefix() + "]*" + tag + player.getName(),
+                            tag + player.getName());
+                    String formatMention = Settings.textColor(false) + cleanMention.replace(
+                            tag + player.getName(),
+                            Settings.formatChat(mentionEvent.getColor(), mPlayer) + Settings.textColor(false));
+
+                    if (force.contains(player.getName() + "visible") || mPlayer.isMentionPublic()) {
+                        event.setMessage(formatMention);
+                        return;
+                    }
+                    event.setMessage(cleanMention);
+                    event.getRecipients().remove(player);
+                    if (Settings.canDeluxeChat() && Settings.canPapi()) {
+                        DeluxeChat deluxeChat = (DeluxeChat) Bukkit.getPluginManager().getPlugin("DeluxeChat");
+
+                        String placeholder = PlaceholderAPI.setPlaceholders(player, "%mention_player_tag%");
+                        formatMention = Settings.textColor(false) + cleanMention
+                                .replace(tag + player.getName(), placeholder + Settings.textColor(false));
+
+                        deluxeChat.getChat().sendDeluxeChat(player,
+                                deluxeChat.getFancyChatFormat(player, deluxeChat.getPlayerFormat(player)).toJSONString(),
+                                deluxeChat.getChat().convertMsg(player, formatMention), Collections.singleton(player));
+                    } else {
+                        player.sendMessage(String.format(event.getFormat(), sender.getPlayer().getDisplayName(), formatMention));
+                    }
+
+                } else if (sender.canBypassMention()) {
+                    TextComponent message = new TextComponent(TextComponent.fromLegacyText(sender.get("messages.mention.disabled")
+                            .replace("{player}", mPlayer.getPlayer().getName())));
+                    String mention = Settings.getPrefix("mention");
+
+                    message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                            event.getMessage().replace(tag + player.getName(), mention + tag + player.getName())));
+
+                    mention = Settings.textColor(false) + event.getMessage().replace(tag + player.getName(),
+                            mention + Settings.formatChat(mPlayer.getColor(), mPlayer) + Settings.textColor(false));
+
+                    message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(mention)));
+                    event.getPlayer().spigot().sendMessage(message);
+					event.setCancelled(true);
                 }
             }
         }
+
     }
 
 }

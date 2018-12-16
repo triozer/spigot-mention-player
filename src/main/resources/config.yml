@@ -1,75 +1,86 @@
 format:
     # Colors can be found here : https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html.
-    text-color: "GRAY" # color of the text (c.f. - make the tag most visible)
-    chat: "{tag}{player-name}"
-    action-bar: "&6{player-name} &7mentioned you."
+    text-color: 'GRAY' # color of the text (c.f. - make the tag most visible)
+    chat: '{prefix}{player-name}'
+    action-bar: '&6{player-name} &7mentioned you.'
 
-# New version support custom color tag.
+options:
+    update-notifier: true # check update on starting
 
-colors:
-   french:
-       name: "French Style" # this name will be showed in the gui
-       pattern: "b,f,c" # separate the colors of the tag with a comma
-       permission: "mention.color.french" # permissions to use this tag
+    mysql:
+        enabled: true
+        host: localhost
+        port: 3306
+        database: mentions
+        user: mention
+        password: noitnem
 
-message:
-    action-bar-on: "&aMentions will now be displayed in the action bar."
-    action-bar-off: "&cMentions will no longer be displayed in the action bar."
-    color: "&aSuccessfully changed your mention tag color! From {last} &ato {new}&a."
-    sound-on: "&aMentions sounds are now activated."
-    sound-off: "&cMentions sounds are now deactivated."
-    toggle-on: "&aYou can now be mentioned."
-    toggle-off: "&cYou can no longer be mentioned."
-    visible-on: "&aOther players will see when you get mentioned."
-    visible-off: "&cOther players will no longer see when you get mentioned."
-    error:
-        already-on: "&cMentions are already toggled on."
-        already-off: "&cMentions are already toggled off."
-        already-visible: "&cYour mentions are already visible to other players."
-        already-hidden: "&cYour mentions are already hidden to other players."
-        action-bar-already-on: "&cMentions are already toggle on for the action bar."
-        action-bar-already-off: "&cMentions are already toggled off for the action bar."
-        sound-already-on: "&cMentions sounds are already toggled on."
-        sound-already-off: "&cMentions sounds are already toggled off."
-        spam: "&cYou can't spam like this."
-
-option:
-    update-notifier: false # check update on starting
     anti-spam:
         enable: true
         interval: 5 # in second
-    # Sounds by version can be found here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
-    # For 1.8 please change this to : NOTE_PLING
-    sound: "BLOCK_NOTE_PLING"
+
     gui: true
     tab-complete: true
-    tag: "&6@"
-    default: # default value
+
+    hook:
+        placeholderapi: true
+        deluxechat: true
+
+    prefix:
+        custom: true
+        force:
+            actionbar: 'a'
+            mention: 'm'
+            popup: 'p'
+            sound: 's'
+            visible: 'v'
+        value: '&6&l@'
+
+    popup:
+        enabled: true # NEVER /reload THE SERVER
+        allow-out-of-boxes: false
+        icon:
+            minecraft: 'book'
+        title:
+          '1': '&aNew mention !'
+          '2': '&b{player}&7, from &e{who}'
+          '3': ''
+
+    default: # default values
         action-bar: true
-        color: "Orange" # list of all colors and correspondence : https://github.com/Triozer/spigot-mention-player/blob/master/src/colors.
+        color: Orange # list of all colors and correspondence : https://github.com/Triozer/spigot-mention-player/blob/master/src/colors.
         mention: true
+        popup: true
         sound: true
         visible: false
+        # Sounds by version can be found here: https://gist.github.com/Triozer/3579ac01cdec67e7331811c01089d325.
+        # For 1.8 please change this to : NOTE_PLING
+        # For 1.12 please change this to : NOTE_PLING
+        # For 1.12 please change this to : NOTE_PLING
+        notification: 'BLOCK_NOTE_BLOCK_PLING'
+
     permission:
-        bypass-action-bar: "mention.bypass-action-bar" # force sending mention to the action bar.
-        bypass-anti-spam: "mention.bypass-anti-spam" # bypass the anti spam interval.
-        bypass-mention: "mention.bypass-mention" # force mentioning a player who does not accept the mentions.
-        bypass-sound: "mention.bypass-sound" # force playing sound by mentioning a player who does not allow sounds.
-        check-update: "mention.check-update" # allow player to check new update.
+        bypass:
+            action-bar: 'mention.bypass.action-bar' # force sending mention to the action bar.
+            anti-spam: 'mention.bypass.anti-spam' # bypass the anti-spam interval.
+            mention: 'mention.bypass.mention' # force mentioning a player.
+            popup: 'mention.bypass.popup' # force showing a popup on mention.
+            sound: 'mention.bypass.sound' # force playing a sound on mention.
         color:
-            use: "mention.color.use" # permission to change tag.
-            black: "mention.color.black"
-            blue: "mention.color.blue"
-            cyan: "mention.color.cyan"
-            dark-gray: "mention.color.dark-gray"
-            dark-green: "mention.color.dark-green"
-            dark-red: "mention.color.dark-red"
-            green: "mention.color.green"
-            orange: "mention.color.orange"
-            light-gray: "mention.color.light-gray"
-            light-purple: "mention.color.light-purple"
-            red: "mention.color.red"
-            white: "mention.color.white"
-            yellow: "mention.color.yellow"
-            rainbow: "mention.color.rainbow"
-        reload: "mention.reload" # reload the configuration file.
+            use: 'mention.color.use' # permission to change mention color in the GUI.
+            black: 'mention.color.black'
+            blue: 'mention.color.blue'
+            cyan: 'mention.color.cyan'
+            dark-aqua: 'mention.color.dark-aqua'
+            dark-gray: 'mention.color.dark-gray'
+            dark-green: 'mention.color.dark-green'
+            dark-purple: 'mention.color.dark-purple'
+            dark-red: 'mention.color.dark-red'
+            green: 'mention.color.green'
+            orange: 'mention.color.orange'
+            light-gray: 'mention.color.light-gray'
+            light-purple: 'mention.color.light-purple'
+            red: 'mention.color.red'
+            white: 'mention.color.white'
+            yellow: 'mention.color.yellow'
+            rainbow: 'mention.color.rainbow'

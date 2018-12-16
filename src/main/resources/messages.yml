@@ -1,0 +1,51 @@
+messages:
+    action-bar:
+        toggle-on: '  &aMentions will now be displayed in the action bar.'
+        toggle-off: '  &cMentions will no longer be displayed in the action bar.'
+        already-on: '  &cActionbar message are already enabled.'
+        already-off: '  &cActionbar message are already disabled.'
+    color:
+        change: '  &aSuccessfully changed your mention tag color &b- &afrom {last} &ato {new}&a.'
+        current: '  &7Your current color tag is &b- {color}'
+        not-valid: '  &cSorry, {color} is not a valid color.'
+    force:
+        change: '  &aYou changed the force prefix for `&f{what}&7` to &b- {prefix}'
+        current: '  &7The current force prefix for `&f{what}&7` is &b- {prefix}'
+    ignore:
+        add: '  &e{player} &7can''t mention you anymore.'
+        remove: '  &e{player} &7can now mention you.'
+    mention:
+        toggle-on: '  &aYou can now be mentioned.'
+        toggle-off: '  &cYou can no longer be mentioned.'
+        disabled: '  &b{player} &ccan''t be mentioned. &8&o(Click on the message if you want to force the mention)'
+        already-on: '  &cMentions are already enabled.'
+        already-off: '  &cMentions are already disabled.'
+    popup:
+        toggle-on: '  &aWhen you get mention a popup will be send at the top right corner.'
+        toggle-off: '  &cPopup will no longer be shown.'
+        already-on: '  &cPopups are already enabled.'
+        already-off: '  &cPopups are already disabled.'
+    prefix:
+        change: '  &aYou changed the prefix to &b- &a`&f{raw-prefix}&a` &8({prefix}&8)'
+        current: '  &7The current prefix is &b- `&f{raw-prefix}&7` &8({prefix}&8)'
+    sound:
+        toggle-on: '  &aMentions sounds are now activated.'
+        toggle-off: '  &cMentions sounds are now deactivated.'
+        change: '  &aSuccessfully changed your mention sound &b- &afrom &7{last} &ato &6{new}&a.'
+        already-on: '  &cMentions sounds are already disabled.'
+        already-off: '  &cMentions sounds are already enabled.'
+        already-use: '  &cYou already use the sound &b- &a{color}&c.'
+    tag:
+        already-use: '  &cYou already use the tag &b- &a{color}&c.'
+        cant-use: '  &cSorry, you can''t use the tag &b- {color}&c.'
+    visible:
+        toggle-on: '  &aOther players will see when you get mentioned.'
+        toggle-off: '  &cOther players will no longer see when you get mentioned.'
+        already-hidden: '  &cYour mentions are already hidden to other players.'
+        already-visible: '  &cYour mentions are already visible to other players.'
+
+errors:
+    cant-find-player: '  &cWho is &b`&f{player}&b`&c?'
+    spam: '  &cYou can''t spam like this.'
+    feature:
+        disabled: '  &cYou can''t use this feature !'

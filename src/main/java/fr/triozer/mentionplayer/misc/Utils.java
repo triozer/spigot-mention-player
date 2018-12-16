@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -29,7 +30,7 @@ public class Utils {
                     put(ChatColor.DARK_PURPLE, DyeColor.PURPLE);
                     put(ChatColor.DARK_RED, DyeColor.RED);
                     put(ChatColor.GOLD, DyeColor.ORANGE);
-                    put(ChatColor.GRAY, DyeColor.SILVER);
+                    put(ChatColor.GRAY, Bukkit.getVersion().contains("1.13") ? DyeColor.LIGHT_GRAY : DyeColor.valueOf("GRAY"));
                     put(ChatColor.GREEN, DyeColor.LIME);
                     put(ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA);
                     put(ChatColor.RED, DyeColor.RED);
@@ -44,50 +45,38 @@ public class Utils {
         version = version.substring(version.lastIndexOf(".") + 1);
 
         try {
-            if (version.equals("v1_12_R1")) {
+            if (version.startsWith("v1_12") || version.startsWith("v1_13")) {
                 ProtocolHack.actionBar(player, message);
-            } else if (!(version.equalsIgnoreCase("v1_8_R1") || (version.contains("v1_7_")))) {
-                Class<?> c1 = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
-                Object   p  = c1.cast(player);
-                Object   ppoc;
-                Class<?> c4 = Class.forName("net.minecraft.server." + version + ".PacketPlayOutChat");
-                Class<?> c5 = Class.forName("net.minecraft.server." + version + ".Packet");
+                return;
+            }
 
-                Class<?> c2 = Class.forName("net.minecraft.server." + version + ".ChatComponentText");
-                Class<?> c3 = Class.forName("net.minecraft.server." + version + ".IChatBaseComponent");
-                Object   o  = c2.getConstructor(new Class<?>[]{String.class}).newInstance(message);
+            Class<?> c1 = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
+            Object     p  = c1.cast(player);
+            Object     ppoc;
+            Class<?>   c4 = Class.forName("net.minecraft.server." + version + ".PacketPlayOutChat");
+            Class<?>   c5 = Class.forName("net.minecraft.server." + version + ".Packet");
+
+            Class<?> c2 = Class.forName("net.minecraft.server." + version + ".ChatComponentText");
+            Class<?> c3 = Class.forName("net.minecraft.server." + version + ".IChatBaseComponent");
+
+            if (!(version.equalsIgnoreCase("v1_8_R1") || (version.contains("v1_7_")))) {
+                Object o = c2.getConstructor(new Class<?>[]{String.class}).newInstance(message);
                 ppoc = c4.getConstructor(new Class<?>[]{c3, byte.class}).newInstance(o, (byte) 2);
 
-                Method getHandle = c1.getDeclaredMethod("getHandle");
-                Object handle    = getHandle.invoke(p);
-
-                Field  fieldConnection  = handle.getClass().getDeclaredField("playerConnection");
-                Object playerConnection = fieldConnection.get(handle);
-
-                Method sendPacket = playerConnection.getClass().getDeclaredMethod("sendPacket", c5);
-                sendPacket.invoke(playerConnection, ppoc);
             } else {
-                Class<?> c1 = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
-                Object   p  = c1.cast(player);
-                Object   ppoc;
-                Class<?> c4 = Class.forName("net.minecraft.server." + version + ".PacketPlayOutChat");
-                Class<?> c5 = Class.forName("net.minecraft.server." + version + ".Packet");
-
-                Class<?> c2  = Class.forName("net.minecraft.server." + version + ".ChatSerializer");
-                Class<?> c3  = Class.forName("net.minecraft.server." + version + ".IChatBaseComponent");
                 Method   m3  = c2.getDeclaredMethod("a", String.class);
                 Object   cbc = c3.cast(m3.invoke(c2, "{\"text\": \"" + message + "\"}"));
                 ppoc = c4.getConstructor(new Class<?>[]{c3, byte.class}).newInstance(cbc, (byte) 2);
-
-                Method getHandle = c1.getDeclaredMethod("getHandle");
-                Object handle    = getHandle.invoke(p);
-
-                Field  fieldConnection  = handle.getClass().getDeclaredField("playerConnection");
-                Object playerConnection = fieldConnection.get(handle);
-
-                Method sendPacket = playerConnection.getClass().getDeclaredMethod("sendPacket", c5);
-                sendPacket.invoke(playerConnection, ppoc);
             }
+
+            Method getHandle = c1.getDeclaredMethod("getHandle");
+            Object handle    = getHandle.invoke(p);
+
+            Field  fieldConnection  = handle.getClass().getDeclaredField("playerConnection");
+            Object playerConnection = fieldConnection.get(handle);
+
+            Method sendPacket = playerConnection.getClass().getDeclaredMethod("sendPacket", c5);
+            sendPacket.invoke(playerConnection, ppoc);
         } catch (Exception e) {
             e.printStackTrace();
         }

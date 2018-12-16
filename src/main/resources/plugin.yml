@@ -3,10 +3,38 @@ name: MentionPlayer
 main: fr.triozer.mentionplayer.MentionPlayer
 author: Triozer
 website: https://c-dric.eu
-version: 1.13.4
+version: 2
+
+api-version: 1.13
 
 description: Mention a player.
+softdepend: [PlaceholderAPI]
 
 commands:
     mention:
-        description: Change your settings.
+        description: Main command of the plugin.
+
+permissions:
+    mention.*:
+        description: Gives access to all MentionPlayer features.
+        default: op
+        children:
+            mention.database: true
+            mention.set: true
+            mention.update: true
+            mention.reload: true
+    mention.database:
+        description: Allows you to reload the database connection.
+        default: false
+    mention.set:
+        description: Allows you to make little changes on the configuration in game.
+        default: false
+        children:
+            mention.set.force: true
+            mention.set.prefix: true
+    mention.reload:
+        description: Allows you to reload the configuration in game.
+        default: false
+    mention.update:
+        description: Allows you to check if there is new version of MentionPlayer.
+        default: false

@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
+import java.util.ArrayList;
+
 /**
  * @author Cédric / Triozer
  */
@@ -16,17 +18,15 @@ public class PlayerTabCompleteListener implements Listener {
     public void onTabComplete(PlayerChatTabCompleteEvent event) {
         String lastToken = event.getLastToken();
 
-        if (!Settings.canTabComplete() || (Settings.getOnlyTag().length() > 0 && !lastToken.startsWith(Settings.getOnlyTag())))
-            return;
+        if (Settings.canTabComplete() && (Settings.getOnlyTag().length() <= 0 || lastToken.startsWith(Settings.getOnlyTag()))) {
 
-        event.getTabCompletions().clear();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (lastToken.length() == 1) {
-                event.getTabCompletions().add(Settings.getOnlyTag() + player.getName());
-            } else if (player.getName().startsWith(event.getLastToken().substring(1))) {
-                event.getTabCompletions().add(Settings.getOnlyTag() + player.getName());
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.getName().startsWith(event.getLastToken().substring(Settings.getOnlyTag().length()))) {
+                    event.getTabCompletions().clear();
+                    event.getTabCompletions().add(Settings.getOnlyTag() + player.getName());
+                }
             }
+
         }
     }
 

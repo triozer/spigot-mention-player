@@ -1,7 +1,7 @@
 package fr.triozer.mentionplayer.listener;
 
 import fr.triozer.mentionplayer.MentionPlayer;
-import fr.triozer.mentionplayer.api.ui.InventoryBuilder;
+import fr.triozer.mentionplayer.api.ui.builder.InventoryBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -36,7 +36,6 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void close(InventoryCloseEvent event) {
-
         InventoryBuilder b = null;
 
         for (InventoryBuilder builder : MentionPlayer.getInstance().getInventoriesList()) {
