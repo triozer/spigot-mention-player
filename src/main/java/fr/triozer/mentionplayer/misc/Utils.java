@@ -44,7 +44,6 @@ public class Utils {
 	public static String getLastColor(String input) {
 		String result = "";
 		input = input.split("@")[0];
-		System.out.println(input);
 		for(int index = input.length() - 1; index > -1; --index) {
 			char section = input.charAt(index);
 			if ((int) section == (int) '&' && index < input.length() - 1) {
