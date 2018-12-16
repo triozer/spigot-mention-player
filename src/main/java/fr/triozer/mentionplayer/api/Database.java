@@ -235,7 +235,7 @@ public class Database {
                 Sound       sound       = this.getSoundOf(uuid);
                 Set<String> ignored     = this.getIgnoredPlayers(uuid);
 
-                MPlayer player = new MPlayer(section, Bukkit.getPlayer(uuid), lastMessage, color, sound, ignored, settings);
+                MPlayer player = new MPlayer(section, uuid, lastMessage, color, sound, ignored, settings);
                 if (callback != null)
                     Bukkit.getScheduler().runTask(MentionPlayer.getInstance(), () -> callback.accept(player));
             } catch (SQLException e) {

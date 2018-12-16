@@ -27,7 +27,7 @@ import static net.md_5.bungee.api.ChatColor.*;
  */
 public class MentionUI {
 	public static void open(Player player) {
-		MPlayer          mPlayer  = MPlayer.get(player);
+		MPlayer          mPlayer  = MPlayer.get(player.getUniqueId());
 		InventoryBuilder contents = new InventoryBuilder(AQUA + "- Settings", 36, true).fill(ClickableItem.EMPTY);
 		ItemStack        sounds   = new ItemBuilder(XMaterial.NOTE_BLOCK.parseMaterial()).name(ChatColor.GOLD + "Sounds").lore("", AQUA + "- " + GRAY + "Change your mention sound.", "").build();
 		ItemStack        ignored  = new ItemBuilder(XMaterial.BARRIER.parseMaterial()).name(ChatColor.GOLD + "Ignored players").lore("", AQUA + "- " + GRAY + "Manage ignored players.", "").build();

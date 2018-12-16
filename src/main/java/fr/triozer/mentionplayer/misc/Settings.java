@@ -34,7 +34,7 @@ public class Settings {
 		String text;
 
 		if (customTag())
-			text = ChatColor.translateAlternateColorCodes('&', MentionPlayer.getInstance().getConfig().getString("options.prefix.value"));
+			text = translateAlternateColorCodes('&', MentionPlayer.getInstance().getConfig().getString("options.prefix.value"));
 		else
 			text = MentionPlayer.getInstance().getConfig().getString("options.prefix.value");
 
@@ -180,7 +180,7 @@ public class Settings {
 	 * @return A message with the specified sender name.
 	 */
 	public static String formatActionBar(String playerName) {
-		return ChatColor.translateAlternateColorCodes('&',
+		return translateAlternateColorCodes('&',
 				MentionPlayer.getInstance().getConfig().getString("format.action-bar")
 						.replace("{player-name}", playerName));
 	}
@@ -242,7 +242,7 @@ public class Settings {
 
 			for (int i = 0; i < clone.length; i++) {
 				for (String code : clone[i].split("")) {
-					ChatColor chatColor = ChatColor.getByChar(code.charAt(0));
+					ChatColor chatColor = getByChar(code.charAt(0));
 					if (chatColor == null) {
 						MentionPlayer.LOG.sendWarning("The plugin can't find color '" + RED + code.charAt(0) + GRAY + "'." +
 								"Custom color '" + YELLOW + color.getString("name") + "'" + GRAY + " will not be loaded.");

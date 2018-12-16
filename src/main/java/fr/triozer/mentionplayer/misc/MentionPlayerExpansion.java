@@ -42,7 +42,7 @@ public class MentionPlayerExpansion extends PlaceholderExpansion {
 		if (player == null) {
 			return null;
 		} else if (identifier.equals("player")) {
-			MPlayer mPlayer = MPlayer.get(player);
+			MPlayer mPlayer = MPlayer.get(player.getUniqueId());
 			return Settings.formatChat(mPlayer.getColor(), mPlayer);
 		} else if (identifier.contains("color")) {
 			String[] args = identifier.split(" ");

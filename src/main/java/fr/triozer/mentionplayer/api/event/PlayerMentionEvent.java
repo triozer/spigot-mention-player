@@ -36,10 +36,10 @@ public class PlayerMentionEvent extends PlayerEvent  implements Cancellable {
     public PlayerMentionEvent(Player who, Player mentioned, boolean canPopup, BukkitPopup popup) {
         super(who);
         this.canPopup = canPopup;
-        this.mPlayer = MPlayer.get(who);
+        this.mPlayer = MPlayer.get(who.getUniqueId());
         this.last = this.mPlayer.getLastMessage();
         this.mentioned = mentioned;
-        this.mentionedPlayer = MPlayer.get(mentioned);
+        this.mentionedPlayer = MPlayer.get(mentioned.getUniqueId());
         this.color = this.mentionedPlayer.getColor();
         this.popup = popup;
     }

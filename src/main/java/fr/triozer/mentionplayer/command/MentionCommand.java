@@ -53,7 +53,8 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		MPlayer player = MPlayer.get((Player) commandSender);
+		Player sender = (Player) commandSender;
+		MPlayer player = MPlayer.get(sender.getUniqueId());
 
 		if (args.length == 0 || "help".equalsIgnoreCase(args[0]) || "?".equalsIgnoreCase(args[0]) || "h".equalsIgnoreCase(args[0]))
 			showHelp(player);
@@ -67,7 +68,7 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
 				help(player, COMMAND + " actionbar <on/off>");
 			}
 		} else if ("color".equalsIgnoreCase(args[0])) {
-			if (args.length == 2 && MPlayer.get((Player) commandSender).canUseTag()) {
+			if (args.length == 2 && MPlayer.get(sender.getUniqueId()).canUseTag()) {
 				if ("set".equalsIgnoreCase(args[1]) && Settings.canGUI()) MentionUI.openColor(player, false);
 				else help(player, COMMAND + " color set");
 			} else player.sendCurrentColor();
@@ -245,7 +246,7 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
 				if ("on".startsWith(arg2)) subcommand.add("on");
 				if ("off".startsWith(arg2)) subcommand.add("off");
 			}
-			if ((MPlayer.get((Player) commandSender).canUseTag() && "color".equalsIgnoreCase(arg))
+			if ((MPlayer.get(((Player) commandSender).getUniqueId()).canUseTag() && "color".equalsIgnoreCase(arg))
 					|| "sound".startsWith(arg)) subcommand.add("set");
 			if ("ignore".equalsIgnoreCase(arg)) subcommand.addAll(Bukkit.getOnlinePlayers()
 					.stream()

@@ -173,8 +173,6 @@ public class MentionPlayer extends JavaPlugin {
     }
 
     private void registerListener() {
-        Bukkit.getPluginManager().registerEvents(new ExampleMentionListener(), this);
-
         Bukkit.getPluginManager().registerEvents(new CacheListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerChatListener(), this);

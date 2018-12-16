@@ -34,10 +34,10 @@ public class MPlayer {
         return players;
     }
 
-    public MPlayer(ConfigurationSection data, Player player, long lastMessage, ColorData color, Sound sound,
+    public MPlayer(ConfigurationSection data, UUID uuid, long lastMessage, ColorData color, Sound sound,
                    Set<String> ignored, Setting... settings) {
         this.data = data;
-        this.uuid = player.getUniqueId();
+        this.uuid = uuid;
         this.settings = new HashMap<>();
 
         for (Setting setting : settings) {
@@ -53,14 +53,13 @@ public class MPlayer {
                         (list, element) -> list.add(UUID.fromString(element)),
                         (list, element) -> {
                         });
-        players.put(player.getUniqueId(), this);
+        players.put(uuid, this);
         this.save();
     }
 
-    public static MPlayer get(Player player) {
-        UUID uniqueId = player.getUniqueId();
-        if (players.containsKey(uniqueId)) {
-            return players.get(uniqueId);
+    public static MPlayer get(UUID uuid) {
+        if (players.containsKey(uuid)) {
+            return players.get(uuid);
         } else {
             Setting     a       = new Setting("sound");
             Setting     b       = new Setting("mention");
@@ -73,24 +72,23 @@ public class MPlayer {
             ColorData color       = ColorData.get(MentionPlayer.getInstance().getConfig().getString("options.default.color"));
             Sound     sound       = Settings.getSound(false);
 
-            if (!MentionPlayer.getInstance().getData().contains(uniqueId.toString())) {
-                MentionPlayer.getInstance().getData().createSection(uniqueId.toString());
-            }
+			ConfigurationSection section = MentionPlayer.getInstance().getData().getConfigurationSection(uuid.toString());
+			if (section != null) {
+				a = new Setting(section, "sound");
+				b = new Setting(section, "mention");
+				c = new Setting(section, "action-bar");
+				d = new Setting(section, "visible");
+				e = new Setting(section, "popup");
+				lastMessage = section.getLong("last-message");
+				color = ColorData.get(section.getString("color"));
+				sound = Sound.valueOf(section.getString("notification").toUpperCase());
+				ignored = new HashSet<>(section.getStringList("ignored"));
+			} else {
+				MentionPlayer.getInstance().getData().createSection(uuid.toString());
+				section = MentionPlayer.getInstance().getData().getConfigurationSection(uuid.toString());
+			}
 
-            ConfigurationSection section = MentionPlayer.getInstance().getData().getConfigurationSection(uniqueId.toString());
-            if (section != null) {
-                a = new Setting(section, "sound");
-                b = new Setting(section, "mention");
-                c = new Setting(section, "action-bar");
-                d = new Setting(section, "visible");
-                e = new Setting(section, "popup");
-                lastMessage = section.getLong("last-message");
-                color = ColorData.get(section.getString("color"));
-                sound = Sound.valueOf(section.getString("notification").toUpperCase());
-                ignored = new HashSet<>(section.getStringList("ignored"));
-            }
-
-            return new MPlayer(section, player, lastMessage, color, sound, ignored, a, b, c, d, e);
+            return new MPlayer(section, uuid, lastMessage, color, sound, ignored, a, b, c, d, e);
         }
 
     }

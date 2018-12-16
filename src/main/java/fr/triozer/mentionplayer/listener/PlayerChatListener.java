@@ -33,7 +33,7 @@ public class PlayerChatListener implements Listener {
             String       tag     = Settings.getOnlyTag();
             String       one     = "";
             Set<String>  force   = new HashSet<>();
-            MPlayer      sender  = MPlayer.get(event.getPlayer());
+            MPlayer      sender  = MPlayer.get(event.getPlayer().getUniqueId());
 
             if (tag.length() == 0)
                 one = "";
@@ -72,7 +72,7 @@ public class PlayerChatListener implements Listener {
             if (players.isEmpty()) return;
 
             for (Player player : players) {
-                MPlayer mPlayer = MPlayer.get(player);
+                MPlayer mPlayer = MPlayer.get(player.getUniqueId());
 
                 if (!sender.canBypassAntiSpam() && System.currentTimeMillis() - sender.getLastMessage() <= Settings.getInterval()) {
                     sender.setLastMessage(System.currentTimeMillis());
@@ -124,7 +124,7 @@ public class PlayerChatListener implements Listener {
                     if (Settings.canDeluxeChat() && Settings.canPapi()) {
                         DeluxeChat deluxeChat = (DeluxeChat) Bukkit.getPluginManager().getPlugin("DeluxeChat");
 
-                        String placeholder = PlaceholderAPI.setPlaceholders(player, "%mention_player_tag%");
+                        String placeholder = PlaceholderAPI.setPlaceholders(player, "%mention_player%");
                         formatMention = Settings.textColor(cleanMention, false) + cleanMention
                                 .replace(tag + player.getName(), placeholder + Settings.textColor(cleanMention, false));
 
