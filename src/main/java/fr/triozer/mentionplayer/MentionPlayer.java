@@ -118,7 +118,7 @@ public class MentionPlayer extends JavaPlugin {
             LOG.sendWarning("Don't reload the server, it could cause serious glitches on popups. " + RED + "Restart it" + GRAY + ".");
         }
         Settings.getSound(true); // here we are checking for mistakes on configuration
-        Settings.textColor(true); // here we are checking for mistakes on configuration
+        Settings.textColor("",true); // here we are checking for mistakes on configuration
         LOG.send("");
 
         if (Settings.canPapi()) {

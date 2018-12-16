@@ -111,9 +111,9 @@ public class PlayerChatListener implements Listener {
 
                     String cleanMention = event.getMessage().replaceAll("[" + Settings.allForcePrefix() + "]*" + tag + player.getName(),
                             tag + player.getName());
-                    String formatMention = Settings.textColor(false) + cleanMention.replace(
+                    String formatMention = Settings.textColor(cleanMention,false) + cleanMention.replace(
                             tag + player.getName(),
-                            Settings.formatChat(mentionEvent.getColor(), mPlayer) + Settings.textColor(false));
+                            Settings.formatChat(mentionEvent.getColor(), mPlayer) + Settings.textColor(cleanMention, false));
 
                     if (force.contains(player.getName() + "visible") || mPlayer.isMentionPublic()) {
                         event.setMessage(formatMention);
@@ -125,8 +125,8 @@ public class PlayerChatListener implements Listener {
                         DeluxeChat deluxeChat = (DeluxeChat) Bukkit.getPluginManager().getPlugin("DeluxeChat");
 
                         String placeholder = PlaceholderAPI.setPlaceholders(player, "%mention_player_tag%");
-                        formatMention = Settings.textColor(false) + cleanMention
-                                .replace(tag + player.getName(), placeholder + Settings.textColor(false));
+                        formatMention = Settings.textColor(cleanMention, false) + cleanMention
+                                .replace(tag + player.getName(), placeholder + Settings.textColor(cleanMention, false));
 
                         deluxeChat.getChat().sendDeluxeChat(player,
                                 deluxeChat.getFancyChatFormat(player, deluxeChat.getPlayerFormat(player)).toJSONString(),
@@ -143,8 +143,8 @@ public class PlayerChatListener implements Listener {
                     message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                             event.getMessage().replace(tag + player.getName(), mention + tag + player.getName())));
 
-                    mention = Settings.textColor(false) + event.getMessage().replace(tag + player.getName(),
-                            mention + Settings.formatChat(mPlayer.getColor(), mPlayer) + Settings.textColor(false));
+                    mention = Settings.textColor(message.getText(), false) + event.getMessage().replace(tag + player.getName(),
+                            mention + Settings.formatChat(mPlayer.getColor(), mPlayer) + Settings.textColor(message.getText(), false));
 
                     message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(mention)));
                     event.getPlayer().spigot().sendMessage(message);

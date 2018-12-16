@@ -130,21 +130,18 @@ public class Settings {
 	 *
 	 * @return The color for the mention message.
 	 */
-	public static ChatColor textColor(boolean log) {
-		String    defaultColor = MentionPlayer.getInstance().getConfig().getString("format.text-color");
-		ChatColor color;
+	public static String textColor(String previous, boolean log) {
+		String defaultColor = MentionPlayer.getInstance().getConfig().getString("format.text-color");
+		String color        = "";
 
 		try {
-			color = ChatColor.valueOf(defaultColor);
+			if (defaultColor.equalsIgnoreCase("none"))
+				color = Utils.getLastColor(previous);
+			else
+				color = defaultColor;
 		} catch (IllegalArgumentException e) {
-			color = ChatColor.GRAY;
-
-			MentionPlayer.getInstance().getConfig().set("format.text-color", color.name());
-			MentionPlayer.getInstance().saveConfig();
-
 			if (log) {
-				MentionPlayer.LOG.sendWarning("The plugin can't find color '" + RED + defaultColor + GRAY + "'" +
-						" automatically set to '" + GREEN + color.name() + "'" + GRAY + ".");
+				MentionPlayer.LOG.sendWarning("The plugin can't find color '" + RED + defaultColor + GRAY + "'.");
 			}
 		}
 

@@ -1,6 +1,6 @@
 format:
     # Colors can be found here : https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html.
-    text-color: 'GRAY' # color of the text (c.f. - make the tag most visible)
+    text-color: 'NONE' # color of the text (c.f. - make the tag most visible), none for auto
     chat: '{prefix}{player-name}'
     action-bar: '&6{player-name} &7mentioned you.'
 
