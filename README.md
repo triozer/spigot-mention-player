@@ -1,6 +1,3 @@
-# Mention Player
-Mention player on your spigot server. :D
-
 ![Introduction](https://i.imgur.com/dcbawSI.png)
 ![Features](https://i.imgur.com/V9NozHp.png)
 ![Commands](https://i.imgur.com/CA6KUuP.png)
