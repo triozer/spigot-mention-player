@@ -62,8 +62,8 @@
         </dependency>
         <!--CraftBukkit-->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>bukkit</artifactId>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
             <version>1.13.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
