@@ -1,3 +1,6 @@
+[![](http://badge.henrya.org/spigot/version?id=42028&color=pink)]()
+[![](http://badge.henrya.org/spigotbukkit/downloads?spigot=42028&color=green)]()
+
 ![Introduction](https://i.imgur.com/dcbawSI.png)
 ![Features](https://i.imgur.com/V9NozHp.png)
 ![Commands](https://i.imgur.com/CA6KUuP.png)
