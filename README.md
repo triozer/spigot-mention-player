@@ -1,5 +1,5 @@
-[![](http://badge.henrya.org/spigot/version?id=42028&color=pink)]()
-[![](http://badge.henrya.org/spigotbukkit/downloads?spigot=42028&color=green)]()
+[![](http://badge.henrya.org/spigot/version?id=42028&color=pink)](https://www.spigotmc.org/resources/mentionplayer-%E2%80%94-version-2-1-is-out.42028/)
+[![](http://badge.henrya.org/spigotbukkit/downloads?spigot=42028&color=green)](https://www.spigotmc.org/resources/mentionplayer-%E2%80%94-version-2-1-is-out.42028/)
 
 ![Introduction](https://i.imgur.com/dcbawSI.png)
 ![Features](https://i.imgur.com/V9NozHp.png)
