@@ -6,6 +6,7 @@ import fr.triozer.mentionplayer.api.ui.color.ColorData;
 import fr.triozer.mentionplayer.misc.Settings;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -300,7 +301,7 @@ public class MPlayer {
         this.save();
     }
 
-    public void ignore(Player player) {
+    public void ignore(OfflinePlayer player) {
         if (this.ignoredPlayers.contains(player.getUniqueId())) {
             this.ignoredPlayers.remove(player.getUniqueId());
             this.getPlayer().sendMessage(get("messages.ignore.remove").replace("{player}", player.getName()));

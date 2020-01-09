@@ -9,10 +9,7 @@ import fr.triozer.mentionplayer.api.ui.color.ColorData;
 import fr.triozer.mentionplayer.misc.Settings;
 import fr.triozer.mentionplayer.misc.XMaterial;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -311,25 +308,22 @@ public class MentionUI {
 			back = new ItemBuilder(Material.ARROW).name(ChatColor.GOLD + "Back")
 					.lore("", ChatColor.AQUA + "- " + ChatColor.GRAY + "Return to options menu.", "").build();
 
-		final UUID[] uuid = player.getIgnoredPlayers().toArray(new UUID[0]);
-		int          size = Math.round((float) uuid.length / 9.0F) * 9 + 9;
+		final List<UUID> uuids = new ArrayList<>(player.getIgnoredPlayers());
+		int          size = Math.round((float) uuids.size() / 9.0F) * 9 + 9;
 		if (size < 18) size += 9;
 		InventoryBuilder ignore = new InventoryBuilder(ChatColor.AQUA + "- Ignored players", size, true)
 				.fill(ClickableItem.EMPTY);
 		if (fromGui) ignore.setItem(size - 1, ClickableItem.of(back, (event) -> open(player.getPlayer())));
 
-		for (int i = 0; i < uuid.length; i++) {
-			Player target = Bukkit.getPlayer(uuid[i]);
+		for (int i = 0; i < uuids.size(); i++) {
+			OfflinePlayer target = Bukkit.getOfflinePlayer(uuids.get(i));
 			if (target == null) continue;
 			String name = target.getName();
 
-			ignore.setItem(i, ClickableItem.of(new ItemBuilder(XMaterial.PLAYER_HEAD.parseMaterial()).durability(3)
+			ignore.setItem(i, ClickableItem.of(new ItemBuilder.Skull(target.getUniqueId())
 							.name(GRAY + name)
 							.lore("", AQUA + "- " + GRAY + "Click to un-ignore.", ""),
 					(event) -> {
-						ItemMeta meta = event.getCurrentItem().getItemMeta();
-						meta.setLore(Arrays.asList("", AQUA + "- " + GRAY + "Click to un-ignore.", ""));
-						event.getCurrentItem().setItemMeta(meta);
 						player.ignore(target);
 						openIgnored(player, fromGui);
 					}));

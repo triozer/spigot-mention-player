@@ -195,6 +195,21 @@ public class Database {
             preparedStatement.setString(8, player.getColor().getID());
             preparedStatement.setString(9, player.getSound().name());
             preparedStatement.execute();
+
+            preparedStatement = this.connection
+                    .prepareStatement("INSERT INTO users (uuid, mention, sound, actionbar, visible, popup, lastMessage, color, notification) " +
+                            "VALUES (@u, @a, @m, @p, @s, @v, @lM, @c, @n) ON DUPLICATE KEY UPDATE " +
+                            "mention = ?, sound = ? , actionbar = ?, visible = ?, popup = ?, lastMessage = ?, color = ?, notification = ?");
+            preparedStatement.setBoolean(1, player.allowMention());
+            preparedStatement.setBoolean(2, player.allowSound());
+            preparedStatement.setBoolean(3, player.allowActionbar());
+            preparedStatement.setBoolean(4, player.isMentionPublic());
+            preparedStatement.setBoolean(5, player.allowPopup());
+            preparedStatement.setLong(6, player.getLastMessage());
+            preparedStatement.setString(7, player.getColor().getID());
+            preparedStatement.setString(8, player.getSound().name());
+            preparedStatement.execute();
+
             preparedStatement = this.connection
                     .prepareStatement("INSERT INTO users (uuid, mention, sound, actionbar, visible, popup, lastMessage, color, notification) " +
                             "VALUES (@u, @a, @m, @p, @s, @v, @lM, @c, @n) ON DUPLICATE KEY UPDATE " +

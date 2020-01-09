@@ -10,6 +10,7 @@ import fr.triozer.mentionplayer.api.ui.color.ColorData;
 import fr.triozer.mentionplayer.misc.Console;
 import fr.triozer.mentionplayer.misc.MentionPlayerExpansion;
 import fr.triozer.mentionplayer.misc.Settings;
+import fr.triozer.mentionplayer.misc.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -97,7 +98,7 @@ public class MentionPlayer extends JavaPlugin {
                 this.database = new Database(host, port, database).auth(getConfig().getString("options.mysql.user"),
                         getConfig().getString("options.mysql.password"));
             } else {
-                LOG.fine(YELLOW + "[" + AQUA + "!" + YELLOW + "]" + GRAY + "The plugin can't use MySQL because you " + RED + "disabled" + GRAY + " this feature.");
+                LOG.fine(YELLOW + "[" + AQUA + "!" + YELLOW + "] " + GRAY + "The plugin can't use MySQL because you " + RED + "disabled" + GRAY + " this feature.");
             }
             LOG.send("");
         });
@@ -208,7 +209,7 @@ public class MentionPlayer extends JavaPlugin {
             this.colors.load(this.colorsFile);
             LOG.send("    " + DARK_GRAY + "Configuration: " + GREEN + "Loaded" + DARK_GRAY + ".");
             LOG.send("    " + DARK_GRAY + "Messages: " + GREEN + "Loaded" + DARK_GRAY + ".");
-            LOG.send("    " + DARK_GRAY + "Colors: " + GREEN + "Loaded" + DARK_GRAY + ".");
+            LOG.send("    " + DARK_GRAY + "Colors: " + GREEN + (Utils.COLORS.size() + this.colors.getKeys(false).size()) + " loaded" + DARK_GRAY + ".");
             LOG.send("");
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
@@ -264,7 +265,7 @@ public class MentionPlayer extends JavaPlugin {
 
     private boolean update() {
         try {
-            URL               url        = new URL("https://api.triozer.fr/plugins/1");
+            URL               url        = new URL("https://api.spiget.org/v2/resources/42028/versions/latest");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("GET");
@@ -284,7 +285,7 @@ public class MentionPlayer extends JavaPlugin {
 			}
 			reader.close();
 
-			this.lastVersion = new JsonParser().parse(a.toString()).getAsJsonObject().get("version").getAsString();
+			this.lastVersion = new JsonParser().parse(a.toString()).getAsJsonObject().get("name").getAsString();
 
             if (this.lastVersion.isEmpty()) return false;
             else if (!this.lastVersion.matches("(?!\\.)(\\d+(\\.\\d+)+)(?:[-.]+)?(?![\\d.])$")) return false;
