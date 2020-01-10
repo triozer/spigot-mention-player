@@ -1,10 +1,13 @@
 package fr.triozer.mentionplayer.api.ui.builder;
 
+import fr.triozer.mentionplayer.misc.xseries.XMaterial;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
 
@@ -16,9 +19,9 @@ public class ItemBuilder {
     private String                    name;
     private Material                  material;
     private int                       amount;
-    private short                     data;
+    private short                     durability;
     private List<String>              lore;
-    private List<ItemFlag>            flags;
+    private Set<ItemFlag>             flags;
     private boolean                   hideFlag;
     private Map<Enchantment, Integer> enchantments;
 
@@ -28,7 +31,22 @@ public class ItemBuilder {
     public ItemBuilder(Material material) {
         this.material = material;
         this.amount = 1;
-        this.data = (byte) 0;
+        this.durability = (byte) 0;
+    }
+
+    /**
+     * @param item ItemStack
+     */
+    public ItemBuilder(ItemStack item) {
+        this.material = item.getType();
+        this.amount = item.getAmount();
+        this.durability = item.getDurability();
+        this.enchantments = item.getEnchantments();
+        if (item.hasItemMeta()) {
+            this.name = item.getItemMeta().getDisplayName();
+            this.lore = item.getItemMeta().getLore();
+            this.flags = item.getItemMeta().getItemFlags();
+        }
     }
 
     /**
@@ -38,7 +56,7 @@ public class ItemBuilder {
     public ItemBuilder(Material material, int amount) {
         this.material = material;
         this.amount = amount;
-        this.data = (byte) 0;
+        this.durability = (byte) 0;
     }
 
     public String getName() {
@@ -53,22 +71,21 @@ public class ItemBuilder {
         return amount;
     }
 
-    public short getData() {
-        return data;
+    public short getDurability() {
+        return durability;
     }
 
     public List<String> getLore() {
         return lore;
     }
 
-    public List<ItemFlag> getFlags() {
+    public Set<ItemFlag> getFlags() {
         return flags;
     }
 
     public Map<Enchantment, Integer> getEnchantments() {
         return enchantments;
     }
-
 
     public ItemBuilder name(String name) {
         this.name = name;
@@ -82,14 +99,14 @@ public class ItemBuilder {
 
     public ItemBuilder hideEnchant() {
         if (this.flags == null) {
-            this.flags = new ArrayList<>();
+            this.flags = new HashSet<>();
         }
         this.flags.add(ItemFlag.HIDE_ENCHANTS);
         return this;
     }
 
     public ItemBuilder durability(int data) {
-        this.data = (short) data;
+        this.durability = (short) data;
         return this;
     }
 
@@ -100,7 +117,7 @@ public class ItemBuilder {
 
     public ItemBuilder itemFlag(ItemFlag flag) {
         if (this.flags == null) {
-            this.flags = new ArrayList<>();
+            this.flags = new HashSet<>();
         }
         this.flags.add(flag);
         return this;
@@ -122,7 +139,7 @@ public class ItemBuilder {
 
     public ItemStack build() {
         ItemStack item = new ItemStack(this.material, this.amount);
-        item.setDurability((short) this.data);
+        item.setDurability(this.durability);
         ItemMeta meta = item.getItemMeta();
         meta.setLore(this.lore);
 
@@ -147,4 +164,27 @@ public class ItemBuilder {
         item.setItemMeta(meta);
         return item;
     }
+
+    public static class Skull extends ItemBuilder {
+        private final UUID uniqueId;
+
+        public Skull(UUID uniqueId) {
+            super(XMaterial.PLAYER_HEAD.parseMaterial());
+            this.durability(3);
+
+            this.uniqueId = uniqueId;
+        }
+
+        @Override
+        public ItemStack build() {
+            ItemStack item = super.build();
+
+            SkullMeta meta = (SkullMeta) item.getItemMeta();
+            meta.setOwner(Bukkit.getOfflinePlayer(uniqueId).getName());
+            item.setItemMeta(meta);
+
+            return item;
+        }
+    }
+
 }

@@ -1,11 +1,15 @@
 package fr.triozer.mentionplayer.api.player;
 
 import fr.triozer.mentionplayer.MentionPlayer;
-import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
+import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
+import fr.triozer.mentionplayer.misc.ProtocolHack;
 import fr.triozer.mentionplayer.misc.Settings;
+import fr.triozer.mentionplayer.misc.xseries.XMaterial;
+import fr.triozer.mentionplayer.misc.xseries.XSound;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -19,20 +23,14 @@ import static net.md_5.bungee.api.ChatColor.*;
  * @author Cédric / Triozer
  */
 public class MPlayer {
-    private static Map<UUID, MPlayer> players = new HashMap<>();
-
-    private       Map<String, Setting> settings;
-    private final UUID                 uuid;
-    private final ConfigurationSection data;
-
-    private long      lastMessage;
-    private ColorData color;
-    private Sound     sound;
-    private Set<UUID> ignoredPlayers;
-
-    public static Map<UUID, MPlayer> getPlayers() {
-        return players;
-    }
+    private static Map<UUID, MPlayer>   players = new HashMap<>();
+    private final  UUID                 uuid;
+    private final  ConfigurationSection data;
+    private        Map<String, Setting> settings;
+    private        long                 lastMessage;
+    private        ColorData            color;
+    private        Sound                sound;
+    private        Set<UUID>            ignoredPlayers;
 
     public MPlayer(ConfigurationSection data, UUID uuid, long lastMessage, ColorData color, Sound sound,
                    Set<String> ignored, Setting... settings) {
@@ -57,6 +55,10 @@ public class MPlayer {
         this.save();
     }
 
+    public static Map<UUID, MPlayer> getPlayers() {
+        return players;
+    }
+
     public static MPlayer get(UUID uuid) {
         if (players.containsKey(uuid)) {
             return players.get(uuid);
@@ -72,36 +74,27 @@ public class MPlayer {
             ColorData color       = ColorData.get(MentionPlayer.getInstance().getConfig().getString("options.default.color"));
             Sound     sound       = Settings.getSound(false);
 
-			ConfigurationSection section = MentionPlayer.getInstance().getData().getConfigurationSection(uuid.toString());
-			if (section != null) {
-				a = new Setting(section, "sound");
-				b = new Setting(section, "mention");
-				c = new Setting(section, "action-bar");
-				d = new Setting(section, "visible");
-				e = new Setting(section, "popup");
-				lastMessage = section.getLong("last-message");
-				color = ColorData.get(section.getString("color"));
-				sound = Sound.valueOf(section.getString("notification").toUpperCase());
-				ignored = new HashSet<>(section.getStringList("ignored"));
-			} else {
-				MentionPlayer.getInstance().getData().createSection(uuid.toString());
-				section = MentionPlayer.getInstance().getData().getConfigurationSection(uuid.toString());
-			}
+            ConfigurationSection section = MentionPlayer.getInstance().getData().getConfigurationSection(uuid.toString());
+            if (section != null) {
+                a = new Setting(section, "sound");
+                b = new Setting(section, "mention");
+                c = new Setting(section, "action-bar");
+                d = new Setting(section, "visible");
+                e = new Setting(section, "popup");
+                lastMessage = section.getLong("last-message");
+                color = ColorData.get(section.getString("color"));
+                sound = XSound.matchXSound(section.getString("notification").toUpperCase())
+                        .get().parseSound();
+                if (sound == null) {
+                    sound = XSound.matchXSound(Settings.getSound(false)).parseSound();
+                }
+                ignored = new HashSet<>(section.getStringList("ignored"));
+            } else {
+                MentionPlayer.getInstance().getData().createSection(uuid.toString());
+                section = MentionPlayer.getInstance().getData().getConfigurationSection(uuid.toString());
+            }
 
             return new MPlayer(section, uuid, lastMessage, color, sound, ignored, a, b, c, d, e);
-        }
-
-    }
-
-    public void setColor(ColorData newColor) {
-        if (!this.canUseTag(newColor)) {
-            this.getPlayer().sendMessage(this.get("messages.tag.cant-use").replace("{color}", newColor.parse(newColor.getName())));
-        } else if (this.color == newColor) {
-            this.getPlayer().sendMessage(this.get("messages.tag.already-use").replace("{color}", this.color.parse(this.color.getName())));
-        } else {
-            this.getPlayer().sendMessage(this.get("messages.color.change").replace("{last}", this.color.parse(this.color.getName())).replace("{new}", newColor.parse(newColor.getName())));
-            this.color = newColor;
-            this.save();
         }
 
     }
@@ -114,19 +107,6 @@ public class MPlayer {
         } else {
             this.settings.get("visible").setState(value);
             this.sendMessage("messages.visible." + (this.settings.get("visible").is() ? "toggle-on" : "toggle-off"));
-            this.save();
-        }
-
-    }
-
-    public void setSound(boolean value) {
-        if (this.settings.get("sound").is() && value) {
-            this.sendMessage("errors.sound.already-on");
-        } else if (!this.settings.get("sound").is() && !value) {
-            this.sendMessage("errors.sound.already-off");
-        } else {
-            this.settings.get("sound").setState(value);
-            this.sendMessage("messages.sound." + (this.settings.get("sound").is() ? "toggle-on" : "toggle-off"));
             this.save();
         }
 
@@ -188,10 +168,10 @@ public class MPlayer {
             return null;
         }
 
-		if (MentionPlayer.getInstance().getConfig().contains("options.popup.icon.data"))
+        if (MentionPlayer.getInstance().getConfig().contains("options.popup.icon.data"))
             return new BukkitPopup(title, icon, MentionPlayer.getInstance().getConfig().getInt("options.popup.icon.data"));
         else
-        	return new BukkitPopup(title, icon);
+            return new BukkitPopup(title, icon);
     }
 
     public void sendCurrentColor() {
@@ -300,7 +280,7 @@ public class MPlayer {
         this.save();
     }
 
-    public void ignore(Player player) {
+    public void ignore(OfflinePlayer player) {
         if (this.ignoredPlayers.contains(player.getUniqueId())) {
             this.ignoredPlayers.remove(player.getUniqueId());
             this.getPlayer().sendMessage(get("messages.ignore.remove").replace("{player}", player.getName()));
@@ -341,8 +321,34 @@ public class MPlayer {
                 this.color : ColorData.get(MentionPlayer.getInstance().getConfig().getString("options.default.color"));
     }
 
+    public void setColor(ColorData newColor) {
+        if (!this.canUseTag(newColor)) {
+            this.getPlayer().sendMessage(this.get("messages.tag.cant-use").replace("{color}", newColor.parse(newColor.getName())));
+        } else if (this.color == newColor) {
+            this.getPlayer().sendMessage(this.get("messages.tag.already-use").replace("{color}", this.color.parse(this.color.getName())));
+        } else {
+            this.getPlayer().sendMessage(this.get("messages.color.change").replace("{last}", this.color.parse(this.color.getName())).replace("{new}", newColor.parse(newColor.getName())));
+            this.color = newColor;
+            this.save();
+        }
+
+    }
+
     public final Sound getSound() {
         return this.sound;
+    }
+
+    public void setSound(boolean value) {
+        if (this.settings.get("sound").is() && value) {
+            this.sendMessage("errors.sound.already-on");
+        } else if (!this.settings.get("sound").is() && !value) {
+            this.sendMessage("errors.sound.already-off");
+        } else {
+            this.settings.get("sound").setState(value);
+            this.sendMessage("messages.sound." + (this.settings.get("sound").is() ? "toggle-on" : "toggle-off"));
+            this.save();
+        }
+
     }
 
     public void setSound(Sound sound) {

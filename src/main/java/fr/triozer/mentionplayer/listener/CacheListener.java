@@ -16,24 +16,23 @@ import java.util.UUID;
  */
 public class CacheListener implements Listener {
 
-	@EventHandler
-	public void onLogin(AsyncPlayerPreLoginEvent event) {
-		UUID uniqueId = event.getUniqueId();
-		Bukkit.getScheduler().runTaskLaterAsynchronously(MentionPlayer.getInstance(), () -> {
-			if (Settings.canSQL() && MentionPlayer.getInstance().getDatabase() != null && MentionPlayer.getInstance().getDatabase().isConnected()) {
-					MentionPlayer.getInstance().getDatabase().create(uniqueId, (player) -> MPlayer.getPlayers().put(uniqueId, player));
-			} else {
-				MPlayer.getPlayers().put(uniqueId, MPlayer.get(uniqueId));
-			}
+    @EventHandler
+    public void onLogin(AsyncPlayerPreLoginEvent event) {
+        UUID uniqueId = event.getUniqueId();
+        Bukkit.getScheduler().runTaskLaterAsynchronously(MentionPlayer.getInstance(), () -> {
+            if (Settings.canSQL() && MentionPlayer.getInstance().getDatabase() != null && MentionPlayer.getInstance().getDatabase().isConnected()) {
+                MentionPlayer.getInstance().getDatabase().create(uniqueId, (player) -> MPlayer.getPlayers().put(uniqueId, player));
+            } else {
+                MPlayer.getPlayers().put(uniqueId, MPlayer.get(uniqueId));
+            }
+        }, 5L);
+    }
 
-		}, 5L);
-	}
-
-	@EventHandler
-	public void onQuit(PlayerQuitEvent event) {
-		if (MPlayer.getPlayers().containsKey(event.getPlayer().getUniqueId())) {
-			MPlayer.get(event.getPlayer().getUniqueId()).save();
-		}
-	}
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if (MPlayer.getPlayers().containsKey(event.getPlayer().getUniqueId())) {
+            MPlayer.get(event.getPlayer().getUniqueId()).save();
+        }
+    }
 
 }

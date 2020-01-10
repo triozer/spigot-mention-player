@@ -6,14 +6,14 @@
 
     <groupId>fr.triozer</groupId>
     <artifactId>mention-player</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <url>https://github.com/triozer/spigot-mention-player</url>
 
     <developers>
         <developer>
             <name>Cédric</name>
             <id>triozer</id>
-            <url>https://c-dric.eu</url>
+            <url>https://imcedric.space</url>
             <roles>
                 <role>Lead developer</role>
             </roles>
@@ -57,14 +57,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.13.1-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--CraftBukkit-->
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.13.1-R0.1-SNAPSHOT</version>
+            <version>1.15.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- PlaceholderAPI -->
