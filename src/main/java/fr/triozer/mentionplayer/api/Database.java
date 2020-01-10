@@ -6,6 +6,8 @@ import fr.triozer.mentionplayer.api.player.Setting;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
 import fr.triozer.mentionplayer.misc.ProtocolHack;
 import fr.triozer.mentionplayer.misc.Settings;
+import fr.triozer.mentionplayer.misc.Utils;
+import fr.triozer.mentionplayer.misc.xseries.XSound;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,9 +24,9 @@ import static net.md_5.bungee.api.ChatColor.*;
 public class Database {
 
     private final MentionPlayer instance = MentionPlayer.getInstance();
-    private final String host;
-    private final int    port;
-    private final String database;
+    private final String        host;
+    private final int           port;
+    private final String        database;
 
     private Connection connection;
     private boolean    connected;
@@ -41,13 +43,14 @@ public class Database {
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
-            this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?autoReconnect=true&useSSL=true",
+            this.connection = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?autoReconnect=true&useSSL=false",
                     username, password);
             MentionPlayer.LOG.fine(YELLOW + "[" + AQUA + "!" + YELLOW + "] " + DARK_GRAY + "Database: " + GREEN + "Connected.");
 
             this.init();
             this.connected = true;
         } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
             MentionPlayer.LOG.fine(YELLOW + "[" + AQUA + "!" + YELLOW + "] " + RED + "The plugin can't contact the MySQL database. "
                     + DARK_GRAY + "Error: " + YELLOW + e.getLocalizedMessage());
             this.connected = false;
@@ -143,7 +146,7 @@ public class Database {
     }
 
     public Sound getSoundOf(UUID uuid) {
-        Sound sound = Sound.valueOf(instance.getConfig().getString("options.default.notification").toUpperCase());
+        Sound sound = Settings.getSound(false);
 
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement("SELECT notification FROM users WHERE uuid = ?");
@@ -151,11 +154,10 @@ public class Database {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                try {
-                    sound = Sound.valueOf(resultSet.getString("notification"));
-                } catch (IllegalArgumentException e) {
-					sound = ProtocolHack.getSound();
-				}
+                sound = XSound.matchXSound(resultSet.getString("notification")).get().parseSound();
+                if (sound == null) {
+                    sound = Settings.getSound(false);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -164,7 +166,7 @@ public class Database {
         return sound;
     }
 
-	public Set<String> getIgnoredPlayers(UUID uuid) {
+    public Set<String> getIgnoredPlayers(UUID uuid) {
         Set<String> players = new HashSet<>();
 
         try {
@@ -195,9 +197,10 @@ public class Database {
             preparedStatement.setString(8, player.getColor().getID());
             preparedStatement.setString(9, player.getSound().name());
             preparedStatement.execute();
+
             preparedStatement = this.connection
                     .prepareStatement("INSERT INTO users (uuid, mention, sound, actionbar, visible, popup, lastMessage, color, notification) " +
-                            "VALUES (@u, @a, @m, @p, @s, @v, @lM, @c, @n) ON DUPLICATE KEY UPDATE " +
+                            "VALUES (@u, @m, @s , @a, @v, @p, @lM, @c, @n) ON DUPLICATE KEY UPDATE " +
                             "mention = ?, sound = ? , actionbar = ?, visible = ?, popup = ?, lastMessage = ?, color = ?, notification = ?");
             preparedStatement.setBoolean(1, player.allowMention());
             preparedStatement.setBoolean(2, player.allowSound());

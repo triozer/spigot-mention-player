@@ -1,8 +1,7 @@
 package fr.triozer.mentionplayer.api.ui;
 
 import fr.triozer.mentionplayer.api.ui.builder.ItemBuilder;
-import fr.triozer.mentionplayer.misc.XMaterial;
-import org.bukkit.Material;
+import fr.triozer.mentionplayer.misc.xseries.XMaterial;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 

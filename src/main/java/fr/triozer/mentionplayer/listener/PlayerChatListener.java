@@ -95,7 +95,9 @@ public class PlayerChatListener implements Listener {
                     PlayerMentionEvent mentionEvent = new PlayerMentionEvent(event.getPlayer(), player,
                             Settings.canPopup() && (force.contains(player.getName() + "popup") || mPlayer.allowPopup()),
                             popup);
-                    Bukkit.getServer().getPluginManager().callEvent(mentionEvent);
+                    Bukkit.getScheduler().runTask(MentionPlayer.getInstance(), () ->
+                            Bukkit.getServer().getPluginManager().callEvent(mentionEvent)
+                    );
 
                     if (mentionEvent.isCancelled()) return;
 
@@ -111,7 +113,7 @@ public class PlayerChatListener implements Listener {
 
                     String cleanMention = event.getMessage().replaceAll("[" + Settings.allForcePrefix() + "]*" + tag + player.getName(),
                             tag + player.getName());
-                    String formatMention = Settings.textColor(cleanMention,false) + cleanMention.replace(
+                    String formatMention = Settings.textColor(cleanMention, false) + cleanMention.replace(
                             tag + player.getName(),
                             Settings.formatChat(mentionEvent.getColor(), mPlayer) + Settings.textColor(cleanMention, false));
 
@@ -148,7 +150,7 @@ public class PlayerChatListener implements Listener {
 
                     message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(mention)));
                     event.getPlayer().spigot().sendMessage(message);
-					event.setCancelled(true);
+                    event.setCancelled(true);
                 }
             }
         }
