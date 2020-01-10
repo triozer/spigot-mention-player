@@ -1,5 +1,7 @@
 package fr.triozer.mentionplayer.api.ui.color;
 
+import fr.triozer.mentionplayer.misc.Utils;
+import fr.triozer.mentionplayer.misc.xseries.XMaterial;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -28,7 +30,7 @@ public class ColorData {
     public final static ColorData DARK_RED     = new ColorData("Dark Red", ChatColor.DARK_RED, DyeColor.BROWN);
     public final static ColorData GREEN        = new ColorData("Green", ChatColor.GREEN, DyeColor.LIME);
     public final static ColorData ORANGE       = new ColorData("Orange", ChatColor.GOLD, DyeColor.ORANGE);
-    public final static ColorData LIGHT_GRAY   = new ColorData("Light Gray", ChatColor.GRAY, Bukkit.getVersion().contains("1.13") ? DyeColor.LIGHT_GRAY : DyeColor.valueOf("GRAY"));
+    public final static ColorData LIGHT_GRAY   = new ColorData("Light Gray", ChatColor.GRAY, XMaterial.isVersionOrHigher(XMaterial.MinecraftVersion.V1_13) ? DyeColor.LIGHT_GRAY : DyeColor.valueOf("GRAY"));
     public final static ColorData LIGHT_PURPLE = new ColorData("Light Purple", ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA);
     public final static ColorData RED          = new ColorData("Red", ChatColor.RED, DyeColor.RED);
     public final static ColorData WHITE        = new ColorData("White", ChatColor.WHITE, DyeColor.WHITE);
@@ -119,6 +121,19 @@ public class ColorData {
         return getInstance().getColorData().get(name.toLowerCase());
     }
 
+    private static String getString(String text, List<ChatColor> colors, char[] l) {
+        for (int i = 0; i < l.length; i++) {
+            if (l[i] == '§') {
+                ChatColor color = ChatColor.getByChar(l[i + 1]);
+                if (color != null && isMagic(color)) {
+                    text = text.replace("" + color, "");
+                    colors.add(color);
+                }
+            }
+        }
+        return text;
+    }
+
     /**
      * Colors a String. This method will keep the ChatColor magic and add the colors of this tag.
      *
@@ -175,19 +190,6 @@ public class ColorData {
         }
 
         return result.toString();
-    }
-
-    private static String getString(String text, List<ChatColor> colors, char[] l) {
-        for (int i = 0; i < l.length; i++) {
-            if (l[i] == '§') {
-                ChatColor color = ChatColor.getByChar(l[i + 1]);
-                if (color != null && isMagic(color)) {
-                    text = text.replace("" + color, "");
-                    colors.add(color);
-                }
-            }
-        }
-        return text;
     }
 
     /**

@@ -4,13 +4,17 @@ import com.google.common.base.Charsets;
 import com.google.gson.JsonParser;
 import fr.triozer.mentionplayer.api.Database;
 import fr.triozer.mentionplayer.api.ui.builder.InventoryBuilder;
-import fr.triozer.mentionplayer.command.MentionCommand;
-import fr.triozer.mentionplayer.listener.*;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
+import fr.triozer.mentionplayer.command.MentionCommand;
+import fr.triozer.mentionplayer.listener.CacheListener;
+import fr.triozer.mentionplayer.listener.InventoryListener;
+import fr.triozer.mentionplayer.listener.PlayerChatListener;
+import fr.triozer.mentionplayer.listener.PlayerTabCompleteListener;
 import fr.triozer.mentionplayer.misc.Console;
 import fr.triozer.mentionplayer.misc.MentionPlayerExpansion;
 import fr.triozer.mentionplayer.misc.Settings;
 import fr.triozer.mentionplayer.misc.Utils;
+import fr.triozer.mentionplayer.misc.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -92,6 +96,7 @@ public class MentionPlayer extends JavaPlugin {
                 LOG.send("");
             }
             if (Settings.canSQL()) {
+
                 String host     = getConfig().getString("options.mysql.host");
                 int    port     = getConfig().getInt("options.mysql.port");
                 String database = getConfig().getString("options.mysql.database");
@@ -111,7 +116,7 @@ public class MentionPlayer extends JavaPlugin {
                     "' because you " + RED + "disabled" + GRAY + " this feature.");
         }
         if (!Settings.canPopup()) {
-            if (Bukkit.getVersion().contains("1.12") || Bukkit.getVersion().contains("1.13") )
+            if (XMaterial.isVersionOrHigher(XMaterial.MinecraftVersion.V1_13))
                 LOG.sendWarning("Your players can't use popups because you " + RED + "disabled" + GRAY + " this feature.");
             else
                 LOG.sendWarning("Your players can't use popups. You should update your server to " + RED + "1.12+" + GRAY + ".");
@@ -119,7 +124,7 @@ public class MentionPlayer extends JavaPlugin {
             LOG.sendWarning("Don't reload the server, it could cause serious glitches on popups. " + RED + "Restart it" + GRAY + ".");
         }
         Settings.getSound(true); // here we are checking for mistakes on configuration
-        Settings.textColor("",true); // here we are checking for mistakes on configuration
+        Settings.textColor("", true); // here we are checking for mistakes on configuration
         LOG.send("");
 
         if (Settings.canPapi()) {
@@ -177,7 +182,9 @@ public class MentionPlayer extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CacheListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerChatListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerTabCompleteListener(), this);
+        if (!XMaterial.isVersionOrHigher(XMaterial.MinecraftVersion.V1_13)) {
+            Bukkit.getPluginManager().registerEvents(new PlayerTabCompleteListener(), this);
+        }
     }
 
     private void createConfig() {
@@ -279,13 +286,13 @@ public class MentionPlayer extends JavaPlugin {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
             StringBuilder a = new StringBuilder();
-			String        str;
-			while ((str = reader.readLine()) != null) {
-				a.append(str);
-			}
-			reader.close();
+            String        str;
+            while ((str = reader.readLine()) != null) {
+                a.append(str);
+            }
+            reader.close();
 
-			this.lastVersion = new JsonParser().parse(a.toString()).getAsJsonObject().get("name").getAsString();
+            this.lastVersion = new JsonParser().parse(a.toString()).getAsJsonObject().get("name").getAsString();
 
             if (this.lastVersion.isEmpty()) return false;
             else if (!this.lastVersion.matches("(?!\\.)(\\d+(\\.\\d+)+)(?:[-.]+)?(?![\\d.])$")) return false;
@@ -293,8 +300,8 @@ public class MentionPlayer extends JavaPlugin {
             return !getDescription().getVersion().equals(this.lastVersion);
         } catch (Exception e) {
             LOG.error("Can't check for update");
-			e.printStackTrace();
-			return false;
+            e.printStackTrace();
+            return false;
         }
     }
 

@@ -117,12 +117,6 @@ public class InventoryBuilder {
         return inventory;
     }
 
-    public InventoryBuilder setListener(InventoryListener listener) {
-        this.listener = listener;
-
-        return this;
-    }
-
     public String getName() {
         return name;
     }
@@ -141,6 +135,12 @@ public class InventoryBuilder {
 
     public final InventoryListener getListener() {
         return this.listener;
+    }
+
+    public InventoryBuilder setListener(InventoryListener listener) {
+        this.listener = listener;
+
+        return this;
     }
 
     public final ClickableItem getContent(int slot) {

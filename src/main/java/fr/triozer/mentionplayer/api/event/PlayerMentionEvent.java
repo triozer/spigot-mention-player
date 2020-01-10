@@ -1,8 +1,8 @@
 package fr.triozer.mentionplayer.api.event;
 
 import fr.triozer.mentionplayer.api.player.MPlayer;
-import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
+import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -13,25 +13,17 @@ import org.bukkit.event.player.PlayerEvent;
  *
  * @author Cédric / Triozer
  */
-public class PlayerMentionEvent extends PlayerEvent  implements Cancellable {
+public class PlayerMentionEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    private final MPlayer     mPlayer;
-    private final Player      mentioned;
-    private final MPlayer     mentionedPlayer;
-    private       boolean     cancelled;
-    private       boolean     canPopup;
-    private       ColorData   color;
-    private       long        last;
-    private       BukkitPopup popup;
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    public final Player getMentioned() {
-        return this.mentioned;
-    }
+    private final        MPlayer     mPlayer;
+    private final        Player      mentioned;
+    private final        MPlayer     mentionedPlayer;
+    private              boolean     cancelled;
+    private              boolean     canPopup;
+    private              ColorData   color;
+    private              long        last;
+    private              BukkitPopup popup;
 
     public PlayerMentionEvent(Player who, Player mentioned, boolean canPopup, BukkitPopup popup) {
         super(who);
@@ -42,6 +34,14 @@ public class PlayerMentionEvent extends PlayerEvent  implements Cancellable {
         this.mentionedPlayer = MPlayer.get(mentioned.getUniqueId());
         this.color = this.mentionedPlayer.getColor();
         this.popup = popup;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    public final Player getMentioned() {
+        return this.mentioned;
     }
 
     public HandlerList getHandlers() {
@@ -60,7 +60,7 @@ public class PlayerMentionEvent extends PlayerEvent  implements Cancellable {
         return this.color;
     }
 
-	public void setColor(ColorData color) {
+    public void setColor(ColorData color) {
         this.color = color;
     }
 

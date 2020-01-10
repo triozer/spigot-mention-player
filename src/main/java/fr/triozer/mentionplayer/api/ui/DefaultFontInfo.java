@@ -99,9 +99,9 @@ public enum DefaultFontInfo {
     SPACE(' ', 3),
     DEFAULT('a', 4);
 
-    public final static int CENTER_PX = 154;
-    private char character;
-    private int  length;
+    public final static int  CENTER_PX = 154;
+    private             char character;
+    private             int  length;
 
     DefaultFontInfo(char character, int length) {
         this.character = character;
@@ -113,19 +113,6 @@ public enum DefaultFontInfo {
             if (dFI.getCharacter() == c) return dFI;
         }
         return DefaultFontInfo.DEFAULT;
-    }
-
-    public char getCharacter() {
-        return this.character;
-    }
-
-    public int getLength() {
-        return this.length;
-    }
-
-    public int getBoldLength() {
-        if (this == DefaultFontInfo.SPACE) return this.getLength();
-        return this.length + 1;
     }
 
     public static String center(String message) {
@@ -164,6 +151,19 @@ public enum DefaultFontInfo {
         }
 
         return sb.toString() + message;
+    }
+
+    public char getCharacter() {
+        return this.character;
+    }
+
+    public int getLength() {
+        return this.length;
+    }
+
+    public int getBoldLength() {
+        if (this == DefaultFontInfo.SPACE) return this.getLength();
+        return this.length + 1;
     }
 
 }
