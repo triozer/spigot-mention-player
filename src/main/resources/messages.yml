@@ -27,7 +27,7 @@ messages:
         already-off: '  &cPopups are already disabled.'
     prefix:
         change: '  &aYou changed the prefix to &b- &a`&f{raw-prefix}&a` &8({prefix}&8)'
-        current: '  &7The current prefix is &b- `&f{raw-prefix}&7` &8({prefix}&8)'
+        current: '  &7The current prefix is &b- `&f{raw-prefix}&b` &8({prefix}&8)'
     sound:
         toggle-on: '  &aMentions sounds are now activated.'
         toggle-off: '  &cMentions sounds are now deactivated.'
