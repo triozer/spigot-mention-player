@@ -54,10 +54,9 @@ public class MentionPlayerExpansion extends PlaceholderExpansion {
             }
         } else if (identifier.contains("state")) {
             boolean isMentionnable = MPlayer.get(player.getUniqueId()).allowMention();
-	    return isMentionnable ? ChatColor.RED + "yes" : ChatColor.GREEN + "no";
+            return isMentionnable ? ChatColor.RED + "yes" : ChatColor.GREEN + "no";
 	}
 
         return null;
-
     }
 }
