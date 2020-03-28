@@ -104,11 +104,11 @@ public class PlayerChatListener implements Listener {
                     if (force.contains(player.getName() + "sound") || mPlayer.allowSound()) {
                         player.playSound(player.getLocation(), mPlayer.getSound(), 1f, 1f);
                     }
-                    if (force.contains(player.getName() + "actionbar") || mPlayer.allowActionbar()) {
+                    if (Settings.canActionBar() && force.contains(player.getName() + "actionbar") || mPlayer.allowActionbar()) {
                         Utils.sendActionBar(player, Settings.formatActionBar(sender.getPlayer().getName()));
                     }
                     if (Settings.canPopup() && mentionEvent.canPopup()) {
-                        mentionEvent.getPopup().show(MentionPlayer.getInstance(), player);
+                        MentionPlayer.getInstance().getWaitingPopups().put(mentionEvent.getPopup(), player);
                     }
 
                     String cleanMention = event.getMessage().replaceAll("[" + Settings.allForcePrefix() + "]*" + tag + player.getName(),

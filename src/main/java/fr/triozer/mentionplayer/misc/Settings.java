@@ -3,6 +3,7 @@ package fr.triozer.mentionplayer.misc;
 import fr.triozer.mentionplayer.MentionPlayer;
 import fr.triozer.mentionplayer.api.player.MPlayer;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
+import fr.triozer.mentionplayer.misc.xseries.XMaterial;
 import fr.triozer.mentionplayer.misc.xseries.XSound;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -89,7 +90,7 @@ public class Settings {
      */
     public static boolean canPopup() {
         return MentionPlayer.getInstance().getConfig().getBoolean("options.popup.enabled")
-                && (Bukkit.getVersion().contains("1.12") || Bukkit.getVersion().contains("1.13"));
+                && XMaterial.isVersionOrHigher(XMaterial.MinecraftVersion.V1_13);
     }
 
     /**
@@ -113,6 +114,15 @@ public class Settings {
      */
     public static boolean canTabComplete() {
         return MentionPlayer.getInstance().getConfig().getBoolean("options.tab-complete");
+    }
+
+    /**
+     * Returns <tt>true</tt> if the configuration allow the use of the action bar.
+     *
+     * @return <tt>true</tt> if the configuration allow the use of the action bar.
+     */
+    public static boolean canActionBar() {
+        return MentionPlayer.getInstance().getConfig().getBoolean("options.action-bar");
     }
 
     /**

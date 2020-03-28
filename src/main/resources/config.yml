@@ -21,6 +21,7 @@ options:
 
     gui: true
     tab-complete: true
+    action-bar: true
 
     hook:
         placeholderapi: true

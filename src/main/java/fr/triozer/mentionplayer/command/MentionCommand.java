@@ -223,7 +223,7 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
             subcommand.add("sound");
             if (commandSender.hasPermission(P_UPDATE)) subcommand.add("update");
             if (commandSender.hasPermission(P_RELOAD)) subcommand.add("reload");
-        } else if (args.length == 1) {
+        } else if (args.length == 1 || args[0].isEmpty()) {
             String arg = args[0].toLowerCase();
             if ("actionbar".startsWith(arg)) subcommand.add("actionbar");
             if ("color".startsWith(arg)) subcommand.add("color");
@@ -241,6 +241,7 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2) {
             String arg  = args[0].toLowerCase();
             String arg2 = args[1].toLowerCase();
+
             if ("actionbar".equalsIgnoreCase(arg) || "sound".equalsIgnoreCase(arg) || "visible".equalsIgnoreCase(arg)
                     || "popup".equalsIgnoreCase(arg)) {
                 if ("on".startsWith(arg2)) subcommand.add("on");
@@ -261,7 +262,6 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                 if ("sound".startsWith(arg2)) subcommand.add("sound");
             }
             if ("prefix".equalsIgnoreCase(arg) && "none".startsWith(arg2)) subcommand.add("none");
-
         }
 
         return subcommand;

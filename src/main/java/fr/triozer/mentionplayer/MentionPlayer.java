@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import fr.triozer.mentionplayer.api.Database;
 import fr.triozer.mentionplayer.api.ui.builder.InventoryBuilder;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
+import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
 import fr.triozer.mentionplayer.command.MentionCommand;
 import fr.triozer.mentionplayer.listener.CacheListener;
 import fr.triozer.mentionplayer.listener.InventoryListener;
@@ -21,6 +22,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -41,10 +43,11 @@ public class MentionPlayer extends JavaPlugin {
 
     private static MentionPlayer instance;
 
-
-    private List<InventoryBuilder> inventories;
-    private Map<String, ColorData> colorData;
-    private Database               database;
+    private int                      popupTaskId;
+    private Map<BukkitPopup, Player> waitingPopups;
+    private List<InventoryBuilder>   inventories;
+    private Map<String, ColorData>   colorData;
+    private Database                 database;
 
     private FileConfiguration data;
     private FileConfiguration messages;
@@ -66,6 +69,7 @@ public class MentionPlayer extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        this.waitingPopups = new HashMap<>();
         this.inventories = new ArrayList<>();
         this.colorData = new HashMap<>();
 
@@ -108,6 +112,9 @@ public class MentionPlayer extends JavaPlugin {
             LOG.send("");
         });
 
+        if (!Settings.canActionBar()) {
+            LOG.sendWarning("Your players won't receive action-bar alerts because you " + RED + "disabled" + GRAY + " this feature.");
+        }
         if (!Settings.canTabComplete()) {
             LOG.sendWarning("Your players can't use tab-completion because you " + RED + "disabled" + GRAY + " this feature.");
         }
@@ -163,10 +170,38 @@ public class MentionPlayer extends JavaPlugin {
 
         registerCommand();
         registerListener();
+
+        startPopupsTask();
+    }
+
+    private void startPopupsTask() {
+        this.popupTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+                this,
+                new Runnable() {
+                    private final List<BukkitPopup> toRemove = new ArrayList<>();
+
+                    @Override
+                    public void run() {
+                        for (Map.Entry<BukkitPopup, Player> entry : waitingPopups.entrySet()) {
+                            if (toRemove.contains(entry.getKey())) continue;
+
+                            entry.getKey().show(getInstance(), entry.getValue());
+                            toRemove.add(entry.getKey());
+                        }
+                        for (BukkitPopup bukkitPopup : toRemove) {
+                            waitingPopups.remove(bukkitPopup);
+                        }
+                    }
+                },
+                0L,
+                20L
+        );
     }
 
     @Override
     public void onDisable() {
+        Bukkit.getScheduler().cancelTask(this.popupTaskId);
+
         Set<HumanEntity> openers = new HashSet<>();
 
         for (InventoryBuilder inventory : this.inventories) openers.addAll(inventory.build().getViewers());
@@ -303,6 +338,15 @@ public class MentionPlayer extends JavaPlugin {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Get the popups to be shown.
+     *
+     * @return a Map with the {@link Player} by {@link BukkitPopup}
+     * */
+    public Map<BukkitPopup, Player> getWaitingPopups() {
+        return this.waitingPopups;
     }
 
     /**
