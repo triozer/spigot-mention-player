@@ -3,6 +3,7 @@ package fr.triozer.mentionplayer.api.player;
 import fr.triozer.mentionplayer.MentionPlayer;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
 import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
+import fr.triozer.mentionplayer.misc.I18N;
 import fr.triozer.mentionplayer.misc.ProtocolHack;
 import fr.triozer.mentionplayer.misc.Settings;
 import fr.triozer.mentionplayer.misc.xseries.XMaterial;
@@ -175,7 +176,7 @@ public class MPlayer {
     }
 
     public void sendCurrentColor() {
-        this.getPlayer().sendMessage(this.get("messages.color.current").replace("{color}", this.color.parse(this.color.getName())));
+        this.getPlayer().sendMessage(I18N.get("messages.color.current").replace("{color}", this.color.parse(this.color.getName())));
     }
 
     public void sendCantUse() {
@@ -264,11 +265,7 @@ public class MPlayer {
     }
 
     public void sendMessage(String path) {
-        this.getPlayer().sendMessage(this.get(path));
-    }
-
-    public String get(String path) {
-        return ChatColor.translateAlternateColorCodes('&', MentionPlayer.getInstance().getMessages().getString(path));
+        this.getPlayer().sendMessage(I18N.get(path));
     }
 
     public final long getLastMessage() {
@@ -283,10 +280,10 @@ public class MPlayer {
     public void ignore(OfflinePlayer player) {
         if (this.ignoredPlayers.contains(player.getUniqueId())) {
             this.ignoredPlayers.remove(player.getUniqueId());
-            this.getPlayer().sendMessage(get("messages.ignore.remove").replace("{player}", player.getName()));
+            this.getPlayer().sendMessage(I18N.get("messages.ignore.remove").replace("{player}", player.getName()));
         } else {
             this.ignoredPlayers.add(player.getUniqueId());
-            this.getPlayer().sendMessage(get("messages.ignore.add").replace("{player}", player.getName()));
+            this.getPlayer().sendMessage(I18N.get("messages.ignore.add").replace("{player}", player.getName()));
         }
 
         this.save();
@@ -323,11 +320,11 @@ public class MPlayer {
 
     public void setColor(ColorData newColor) {
         if (!this.canUseTag(newColor)) {
-            this.getPlayer().sendMessage(this.get("messages.tag.cant-use").replace("{color}", newColor.parse(newColor.getName())));
+            this.getPlayer().sendMessage(I18N.get("messages.tag.cant-use").replace("{color}", newColor.parse(newColor.getName())));
         } else if (this.color == newColor) {
-            this.getPlayer().sendMessage(this.get("messages.tag.already-use").replace("{color}", this.color.parse(this.color.getName())));
+            this.getPlayer().sendMessage(I18N.get("messages.tag.already-use").replace("{color}", this.color.parse(this.color.getName())));
         } else {
-            this.getPlayer().sendMessage(this.get("messages.color.change").replace("{last}", this.color.parse(this.color.getName())).replace("{new}", newColor.parse(newColor.getName())));
+            this.getPlayer().sendMessage(I18N.get("messages.color.change").replace("{last}", this.color.parse(this.color.getName())).replace("{new}", newColor.parse(newColor.getName())));
             this.color = newColor;
             this.save();
         }
@@ -353,9 +350,9 @@ public class MPlayer {
 
     public void setSound(Sound sound) {
         if (this.sound == sound) {
-            this.getPlayer().sendMessage(this.get("messages.sound.already.use").replace("{sound}", this.sound.name()));
+            this.getPlayer().sendMessage(I18N.get("messages.sound.already.use").replace("{sound}", this.sound.name()));
         } else {
-            this.getPlayer().sendMessage(this.get("messages.sound.change").replace("{last}", this.sound.name()).replace("{new}", sound.name()));
+            this.getPlayer().sendMessage(I18N.get("messages.sound.change").replace("{last}", this.sound.name()).replace("{new}", sound.name()));
             this.sound = sound;
             this.save();
         }

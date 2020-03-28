@@ -5,6 +5,7 @@ import fr.triozer.mentionplayer.api.player.MPlayer;
 import fr.triozer.mentionplayer.api.ui.DefaultFontInfo;
 import fr.triozer.mentionplayer.api.ui.builder.InventoryBuilder;
 import fr.triozer.mentionplayer.gui.MentionUI;
+import fr.triozer.mentionplayer.misc.I18N;
 import fr.triozer.mentionplayer.misc.Settings;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -78,7 +79,7 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                 if (Settings.getPrefix(arg) == null)
                     help(player, COMMAND + " force <actionbar/mention/popup/sound>");
                 else {
-                    player.getPlayer().sendMessage(player.get("messages.force.current")
+                    player.getPlayer().sendMessage(I18N.get("messages.force.current")
                             .replace("{what}", arg)
                             .replace("{prefix}", Settings.getPrefix(arg)));
                 }
@@ -87,17 +88,17 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                 instance.getConfig().set("options.prefix.force." + arg, args[2]);
                 instance.saveConfig();
                 instance.reloadConfig();
-                player.getPlayer().sendMessage(player.get("messages.force.change")
+                player.getPlayer().sendMessage(I18N.get("messages.force.change")
                         .replace("{what}", arg)
                         .replace("{prefix}", Settings.getPrefix(arg)));
             } else {
-                player.getPlayer().sendMessage(player.get("messages.force.current").replace("{what}", "actionbar")
+                player.getPlayer().sendMessage(I18N.get("messages.force.current").replace("{what}", "actionbar")
                         .replace("{prefix}", Settings.getPrefix("actionbar")));
-                player.getPlayer().sendMessage(player.get("messages.force.current").replace("{what}", "mention")
+                player.getPlayer().sendMessage(I18N.get("messages.force.current").replace("{what}", "mention")
                         .replace("{prefix}", Settings.getPrefix("mention")));
-                player.getPlayer().sendMessage(player.get("messages.force.current").replace("{what}", "popup")
+                player.getPlayer().sendMessage(I18N.get("messages.force.current").replace("{what}", "popup")
                         .replace("{prefix}", Settings.getPrefix("popup")));
-                player.getPlayer().sendMessage(player.get("messages.force.current").replace("{what}", "sound")
+                player.getPlayer().sendMessage(I18N.get("messages.force.current").replace("{what}", "sound")
                         .replace("{prefix}", Settings.getPrefix("sound")));
             }
         } else if ("gui".equalsIgnoreCase(args[0])) {
@@ -110,7 +111,7 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                 if (playerExact != null) {
                     player.ignore(playerExact);
                 } else {
-                    player.getPlayer().sendMessage(player.get("errors.cant-find-player")
+                    player.getPlayer().sendMessage(I18N.get("errors.cant-find-player")
                             .replace("{player}", args[1]));
                 }
             } else MentionUI.openIgnored(player, false);
@@ -143,11 +144,11 @@ public class MentionCommand implements CommandExecutor, TabCompleter {
                 }
 
                 instance.saveConfig();
-                player.getPlayer().sendMessage(player.get("messages.prefix.change")
+                player.getPlayer().sendMessage(I18N.get("messages.prefix.change")
                         .replace("{raw-prefix}", Settings.getTag().replace("§", "&"))
                         .replace("{prefix}", Settings.getTag()));
             } else
-                player.getPlayer().sendMessage(player.get("messages.prefix.current")
+                player.getPlayer().sendMessage(I18N.get("messages.prefix.current")
                         .replace("{raw-prefix}", Settings.getTag().replace("§", "&"))
                         .replace("{prefix}", Settings.getTag()));
         } else if ("sound".equalsIgnoreCase(args[0])) {

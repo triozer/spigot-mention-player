@@ -4,6 +4,7 @@ import fr.triozer.mentionplayer.MentionPlayer;
 import fr.triozer.mentionplayer.api.event.PlayerMentionEvent;
 import fr.triozer.mentionplayer.api.player.MPlayer;
 import fr.triozer.mentionplayer.api.ui.popup.BukkitPopup;
+import fr.triozer.mentionplayer.misc.I18N;
 import fr.triozer.mentionplayer.misc.Settings;
 import fr.triozer.mentionplayer.misc.Utils;
 import me.clip.deluxechat.DeluxeChat;
@@ -138,8 +139,9 @@ public class PlayerChatListener implements Listener {
                     }
 
                 } else if (sender.canBypassMention()) {
-                    TextComponent message = new TextComponent(TextComponent.fromLegacyText(sender.get("messages.mention.disabled")
-                            .replace("{player}", mPlayer.getPlayer().getName())));
+                    TextComponent message = new TextComponent(TextComponent.fromLegacyText(
+                        I18N.get("messages.mention.disabled").replace("{player}", mPlayer.getPlayer().getName()))
+                    );
                     String mention = Settings.getPrefix("mention");
 
                     message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,

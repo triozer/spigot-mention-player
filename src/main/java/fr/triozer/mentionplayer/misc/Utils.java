@@ -22,6 +22,15 @@ import static org.bukkit.ChatColor.RESET;
  */
 public class Utils {
 
+    public static String[] set(String[] array, String[] keys, Object... values) {
+        for (int i = 0; i < array.length; i++) {
+            for (int i1 = 0; i1 < keys.length; i1++) {
+                array[i] = array[i].replaceAll("\\{" + keys[i1] + "}", values[i1] == null ? keys[i1] : values[i1].toString());
+            }
+        }
+        return array;
+    }
+
     public static final Map<ChatColor, DyeColor> COLORS = ImmutableMap.<ChatColor, DyeColor>builder()
             .putAll(new HashMap<ChatColor, DyeColor>() {
                 {
