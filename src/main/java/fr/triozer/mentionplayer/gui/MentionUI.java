@@ -6,10 +6,11 @@ import fr.triozer.mentionplayer.api.ui.ClickableItem;
 import fr.triozer.mentionplayer.api.ui.builder.InventoryBuilder;
 import fr.triozer.mentionplayer.api.ui.builder.ItemBuilder;
 import fr.triozer.mentionplayer.api.ui.color.ColorData;
+import fr.triozer.mentionplayer.misc.I18N;
 import fr.triozer.mentionplayer.misc.Settings;
+import fr.triozer.mentionplayer.misc.Utils;
 import fr.triozer.mentionplayer.misc.xseries.XMaterial;
 import fr.triozer.mentionplayer.misc.xseries.XSound;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,17 +19,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-import static net.md_5.bungee.api.ChatColor.*;
-
 /**
  * @author Cédric / Triozer
  */
 public class MentionUI {
     public static void open(Player player) {
         MPlayer          mPlayer  = MPlayer.get(player.getUniqueId());
-        InventoryBuilder contents = new InventoryBuilder(AQUA + "- Settings", 36, true).fill(ClickableItem.EMPTY);
-        ItemStack        sounds   = new ItemBuilder(XMaterial.NOTE_BLOCK.parseMaterial()).name(ChatColor.GOLD + "Sounds").lore("", AQUA + "- " + GRAY + "Change your mention sound.", "").build();
-        ItemStack        ignored  = new ItemBuilder(XMaterial.BARRIER.parseMaterial()).name(ChatColor.GOLD + "Ignored players").lore("", AQUA + "- " + GRAY + "Manage ignored players.", "").build();
+        InventoryBuilder contents = new InventoryBuilder(I18N.get("messages.gui.settings.title"), 36, true).fill(ClickableItem.EMPTY);
+        ItemStack        sounds   = new ItemBuilder(XMaterial.NOTE_BLOCK.parseMaterial()).name(I18N.get("messages.gui.settings.categories.sounds.item.title")).lore(I18N.getStringList("messages.gui.settings.categories.sounds.item.lore")).build();
+        ItemStack        ignored  = new ItemBuilder(XMaterial.BARRIER.parseMaterial()).name(I18N.get("messages.gui.settings.categories.ignored-players.item.title")).lore(I18N.getStringList("messages.gui.settings.categories.ignored-players.item.lore")).build();
 
         if (mPlayer.canUseTag()) {
             contents.setItem(20, ClickableItem.of(sounds, (event) -> openSound(mPlayer, true)));
@@ -39,8 +38,8 @@ public class MentionUI {
                         mPlayer.getColor().getDyeColor()[0].getWoolData()
                 ).get().parseItem();
                 ItemMeta itemMeta = wool.getItemMeta();
-                itemMeta.setDisplayName(ChatColor.GOLD + "Color");
-                itemMeta.setLore(Arrays.asList("", AQUA + "- " + GRAY + "Choose your mention color.", ""));
+                itemMeta.setDisplayName(I18N.get("messages.gui.settings.categories.color.item.title"));
+                itemMeta.setLore(Arrays.asList(I18N.getStringList("messages.gui.settings.categories.color.item.lore")));
                 wool.setItemMeta(itemMeta);
 
                 contents.setItem(19, ClickableItem.of(
@@ -69,8 +68,8 @@ public class MentionUI {
                                     color.getWoolData()
                             ).get().parseItem();
                             ItemMeta itemMeta = wool.getItemMeta();
-                            itemMeta.setDisplayName(ChatColor.GOLD + "Color");
-                            itemMeta.setLore(Arrays.asList("", AQUA + "- " + GRAY + "Choose your mention color.", ""));
+                            itemMeta.setDisplayName(I18N.get("messages.gui.settings.categories.color.item.title"));
+                            itemMeta.setLore(Arrays.asList(I18N.getStringList("messages.gui.settings.categories.color.item.lore")));
                             wool.setItemMeta(itemMeta);
 
                             contents.setItem(19, ClickableItem
@@ -99,49 +98,95 @@ public class MentionUI {
 
     private static void setContents(InventoryBuilder inventoryBuilder, MPlayer mPlayer, int firstSlot) {
         ItemStack sound = new ItemBuilder(mPlayer.allowSound() ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem())
-                .name(ChatColor.GOLD + "Sound").lore("", AQUA + "- " + (mPlayer.allowSound() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " mentions sound.", "")
+                .name(I18N.get("messages.gui.settings.actions.sounds.title"))
+                .lore(Utils.set(
+                        I18N.getStringList("messages.gui.settings.actions.sound.lore"),
+                        new String[]{"state"},
+                        !mPlayer.allowSound() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))
+                )
                 .build();
         ItemStack mention = new ItemBuilder(mPlayer.allowMention() ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem())
-                .name(ChatColor.GOLD + "Mention").lore("", AQUA + "- " + (mPlayer.allowMention() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " mentions.", "")
-                .build();
-        ItemStack action = new ItemBuilder(mPlayer.allowActionbar() ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem())
-                .name(ChatColor.GOLD + "Actionbar").lore("", AQUA + "- " + (mPlayer.allowActionbar() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " actionbar's notifications.", "")
+                .name(I18N.get("messages.gui.settings.actions.mention.title"))
+                .lore(Utils.set(
+                        I18N.getStringList("messages.gui.settings.actions.mention.lore"),
+                        new String[]{"state"},
+                        !mPlayer.allowMention() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))
+                )
                 .build();
         ItemStack visible = new ItemBuilder(mPlayer.isMentionPublic() ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem())
-                .name(ChatColor.GOLD + "Public").lore("", AQUA + "- " + (mPlayer.isMentionPublic() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " visibility of your tag.", ChatColor.DARK_GRAY + "(only for other player)", "")
+                .name(I18N.get("messages.gui.settings.actions.public.title"))
+                .lore(Utils.set(
+                        I18N.getStringList("messages.gui.settings.actions.public.lore"),
+                        new String[]{"state"},
+                        !mPlayer.isMentionPublic() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))
+                )
                 .build();
 
         inventoryBuilder.setItem(firstSlot++, ClickableItem.of(sound, (event) -> {
             mPlayer.setSound(!mPlayer.allowSound());
             ItemMeta meta = event.getCurrentItem().getItemMeta();
-            meta.setLore(Arrays.asList("", AQUA + "- " + (mPlayer.allowSound() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " mentions sound.", ""));
+            meta.setLore(Arrays.asList(Utils.set(
+                    I18N.getStringList("messages.gui.settings.actions.sound.lore"),
+                    new String[]{"state"},
+                    !mPlayer.allowSound() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))));
             event.getCurrentItem().setItemMeta(meta);
             open(mPlayer.getPlayer());
         })).setItem(firstSlot++, ClickableItem.of(mention, (event) -> {
             mPlayer.setMention(!mPlayer.allowMention());
             ItemMeta meta = event.getCurrentItem().getItemMeta();
-            meta.setLore(Arrays.asList("", AQUA + "- " + (mPlayer.allowMention() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " mentions.", ""));
-            event.getCurrentItem().setItemMeta(meta);
-            open(mPlayer.getPlayer());
-        })).setItem(firstSlot++, ClickableItem.of(action, (event) -> {
-            mPlayer.setActionbar(!mPlayer.allowActionbar());
-            ItemMeta meta = event.getCurrentItem().getItemMeta();
-            meta.setLore(Arrays.asList("", AQUA + "- " + (mPlayer.allowActionbar() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " actionbar's notifications.", ""));
+            meta.setLore(Arrays.asList(Utils.set(
+                    I18N.getStringList("messages.gui.settings.actions.mention.lore"),
+                    new String[]{"state"},
+                    !mPlayer.allowMention() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))));
             event.getCurrentItem().setItemMeta(meta);
             open(mPlayer.getPlayer());
         })).setItem(firstSlot++, ClickableItem.of(visible, (event) -> {
             mPlayer.setVisible(!mPlayer.isMentionPublic());
             ItemMeta meta = event.getCurrentItem().getItemMeta();
-            meta.setLore(Arrays.asList("", AQUA + "- " + (mPlayer.isMentionPublic() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " visibility of your tag.", "(only for other player)", ""));
+            meta.setLore(Arrays.asList(Utils.set(
+                    I18N.getStringList("messages.gui.settings.actions.public.lore"),
+                    new String[]{"state"},
+                    !mPlayer.isMentionPublic() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))));
             event.getCurrentItem().setItemMeta(meta);
             open(mPlayer.getPlayer());
         }));
+        if (Settings.canActionBar()) {
+            ItemStack action = new ItemBuilder(mPlayer.allowActionbar() ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem())
+                    .name(I18N.get("messages.gui.settings.actions.action-bar.title"))
+                    .lore(Utils.set(
+                            I18N.getStringList("messages.gui.settings.actions.action-bar.lore"),
+                            new String[]{"state"},
+                            !mPlayer.allowActionbar() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))
+                    )
+                    .build();
+            inventoryBuilder.setItem(firstSlot++, ClickableItem.of(action, (event) -> {
+                mPlayer.setActionbar(!mPlayer.allowActionbar());
+                ItemMeta meta = event.getCurrentItem().getItemMeta();
+                meta.setLore(Arrays.asList(Utils.set(
+                        I18N.getStringList("messages.gui.settings.actions.action-bar.lore"),
+                        new String[]{"state"},
+                        !mPlayer.allowActionbar() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))));
+                event.getCurrentItem().setItemMeta(meta);
+                open(mPlayer.getPlayer());
+            }));
+        }
         if (Settings.canPopup()) {
-            ItemStack popup = (new ItemBuilder(mPlayer.allowPopup() ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem())).name(ChatColor.GOLD + "Popup").lore("", AQUA + "- " + (mPlayer.allowPopup() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " popup's notifications.", "").build();
+            ItemStack popup = (new ItemBuilder(mPlayer.allowPopup() ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem()))
+                    .name(I18N.get("messages.gui.settings.actions.popup.title"))
+                    .lore(Utils.set(
+                            I18N.getStringList("messages.gui.settings.actions.popup.lore"),
+                            new String[]{"state"},
+                            !mPlayer.allowPopup() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))
+                    )
+                    .build();
             inventoryBuilder.setItem(firstSlot, ClickableItem.of(popup, (event) -> {
                 mPlayer.setPopup(!mPlayer.allowPopup());
                 ItemMeta meta = event.getCurrentItem().getItemMeta();
-                meta.setLore(Arrays.asList("", AQUA + "- " + (mPlayer.allowPopup() ? ChatColor.RED + "Disable" : ChatColor.GREEN + "Enable") + " popup's notifications.", ""));
+                meta.setLore(Arrays.asList(Utils.set(
+                        I18N.getStringList("messages.gui.settings.actions.popup.lore"),
+                        new String[]{"state"},
+                        !mPlayer.allowPopup() ? I18N.get("messages.gui.state.enable") : I18N.get("messages.gui.state.disable"))
+                ));
                 event.getCurrentItem().setItemMeta(meta);
                 open(mPlayer.getPlayer());
             }));
@@ -151,10 +196,13 @@ public class MentionUI {
     public static void openColor(MPlayer player, boolean fromGui) {
         ItemStack back = null;
         if (fromGui)
-            back = new ItemBuilder(Material.ARROW).name(ChatColor.GOLD + "Back").lore("", ChatColor.AQUA + "- " + ChatColor.GRAY + "Return to options menu.", "").build();
+            back = new ItemBuilder(Material.ARROW)
+                    .name(I18N.get("messages.gui.back.title"))
+                    .lore(I18N.getStringList("messages.gui.back.lore"))
+                    .build();
 
         int size = Math.round((float) MentionPlayer.getInstance().getColorData().size() / 9.0F) * 9 + 9;
-        InventoryBuilder color = new InventoryBuilder(ChatColor.AQUA + "- Color", size, true)
+        InventoryBuilder color = new InventoryBuilder(I18N.get("messages.gui.settings.categories.color.gui.title"), size, true)
                 .fill(ClickableItem.EMPTY);
         if (fromGui) color.setItem(size - 1, ClickableItem.of(back, (event) -> open(player.getPlayer())));
         int slot = 0;
@@ -202,7 +250,7 @@ public class MentionUI {
                 ).get().parseItem();
                 ItemMeta meta = item.getItemMeta();
                 meta.setDisplayName(colorData.parse(colorData.getName()));
-                meta.setLore(Arrays.asList("", AQUA + "- " + GRAY + "This is your actual tag color.", ""));
+                meta.setLore(Arrays.asList(I18N.getStringList("messages.gui.settings.categories.color.gui.current-color-lore")));
                 item.setItemMeta(meta);
 
                 color.setItem(slot, ClickableItem.empty(item));
@@ -233,7 +281,10 @@ public class MentionUI {
     public static void openSound(MPlayer player, boolean fromGui) {
         ItemStack back = null;
         if (fromGui)
-            back = new ItemBuilder(Material.ARROW).name(ChatColor.GOLD + "Back").lore("", ChatColor.AQUA + "- " + ChatColor.GRAY + "Return to options menu.", "").build();
+            back = new ItemBuilder(Material.ARROW)
+                    .name(I18N.get("messages.gui.back.title"))
+                    .lore(I18N.getStringList("messages.gui.back.lore"))
+                    .build();
 
         List<Sound> listSound = new LinkedList<>();
 
@@ -257,36 +308,37 @@ public class MentionUI {
         listSound.add(XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound());
 
 
-        int           size = Math.round((float) listSound.size() / 9.0F) * 9 + 9;
-        InventoryBuilder sound = new InventoryBuilder(ChatColor.AQUA + "- Sound", size, true)
+        int size = Math.round((float) listSound.size() / 9.0F) * 9 + 9;
+        InventoryBuilder sound = new InventoryBuilder(I18N.get("messages.gui.settings.categories.sounds.gui.title"), size, true)
                 .fill(ClickableItem.EMPTY);
         if (fromGui) sound.setItem(size - 1, ClickableItem.of(back, (event) -> open(player.getPlayer())));
 
         final Sound[]     choose  = {null};
         final ItemStack[] choosed = {null};
-        int pos = 0;
+        int               pos     = 0;
         for (Sound _sound : listSound) {
             if (_sound == null) continue;
+            String name = I18N.get("messages.gui.settings.categories.sounds.gui.notes." + _sound.name(), _sound.name());
             if (player.getSound() == _sound) {
                 sound.setItem(pos, ClickableItem.of(new ItemBuilder(Material.NOTE_BLOCK)
-                                .name(GREEN + _sound.name())
-                                .lore("", AQUA + "- " + GRAY + "This is your actual sound.", ""),
+                                .name(I18N.get("messages.gui.settings.categories.sounds.gui.current-sound-item.name").replace("{sound-name}", name))
+                                .lore(I18N.getStringList("messages.gui.settings.categories.sounds.gui.current-sound-item.lore")),
                         (event) -> player.getPlayer().playSound(player.getPlayer().getLocation(), _sound, 1f, 1f)));
             } else {
                 sound.setItem(pos, ClickableItem.of(new ItemBuilder(Material.NOTE_BLOCK)
-                                .name(GRAY + _sound.name())
-                                .lore("", AQUA + "- " + GRAY + "Click to play the sound.", ""),
+                                .name(I18N.get("messages.gui.settings.categories.sounds.gui.block-note-item.name").replace("{sound-name}", name))
+                                .lore(I18N.getStringList("messages.gui.settings.categories.sounds.gui.block-note-item.lore")),
                         (event) -> {
                             if (choose[0] != _sound) {
                                 ItemMeta meta;
                                 if (choosed[0] != null &&
                                         !choosed[0].getItemMeta().getDisplayName().equalsIgnoreCase(event.getCurrentItem().getItemMeta().getDisplayName())) {
                                     meta = choosed[0].getItemMeta();
-                                    meta.setLore(Arrays.asList("", AQUA + "- " + GRAY + "Click to play the sound.", ""));
+                                    meta.setLore(Arrays.asList(I18N.getStringList("messages.gui.settings.categories.sounds.gui.block-note-item.lore")));
                                     choosed[0].setItemMeta(meta);
                                 }
                                 meta = event.getCurrentItem().getItemMeta();
-                                meta.setLore(Arrays.asList("", AQUA + "- " + GRAY + "Click to play the sound.", ITALIC + "(click again to select it)", ""));
+                                meta.setLore(Arrays.asList(I18N.getStringList("messages.gui.settings.categories.sounds.gui.block-note-confirmation-lore")));
                                 event.getCurrentItem().setItemMeta(meta);
                                 choose[0] = _sound;
                                 choosed[0] = event.getCurrentItem();
@@ -306,13 +358,15 @@ public class MentionUI {
     public static void openIgnored(MPlayer player, boolean fromGui) {
         ItemStack back = null;
         if (fromGui)
-            back = new ItemBuilder(Material.ARROW).name(ChatColor.GOLD + "Back")
-                    .lore("", ChatColor.AQUA + "- " + ChatColor.GRAY + "Return to options menu.", "").build();
+            back = new ItemBuilder(Material.ARROW)
+                    .name(I18N.get("messages.gui.back.title"))
+                    .lore(I18N.getStringList("messages.gui.back.lore"))
+                    .build();
 
         final List<UUID> uuids = new ArrayList<>(player.getIgnoredPlayers());
         int              size  = Math.round((float) uuids.size() / 9.0F) * 9 + 9;
         if (size < 18) size += 9;
-        InventoryBuilder ignore = new InventoryBuilder(ChatColor.AQUA + "- Ignored players", size, true)
+        InventoryBuilder ignore = new InventoryBuilder(I18N.get("messages.gui.settings.categories.ignored-players.gui.title"), size, true)
                 .fill(ClickableItem.EMPTY);
         if (fromGui) ignore.setItem(size - 1, ClickableItem.of(back, (event) -> open(player.getPlayer())));
 
@@ -322,8 +376,8 @@ public class MentionUI {
             String name = target.getName();
 
             ignore.setItem(i, ClickableItem.of(new ItemBuilder.Skull(target.getUniqueId())
-                            .name(GRAY + name)
-                            .lore("", AQUA + "- " + GRAY + "Click to un-ignore.", ""),
+                            .name(I18N.get("messages.gui.settings.categories.ignored-players.gui.item-name").replace("{player-name}", name))
+                            .lore(I18N.getStringList("messages.gui.settings.categories.ignored-players.gui.item-lore")),
                     (event) -> {
                         player.ignore(target);
                         openIgnored(player, fromGui);
